@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0,
+                 maximum-scale=1.0, user-scalable=no">
+
+  <meta name="theme-color" content="#080808">
+
+  <title>IRON FURY</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div id="game">
+
+  <!-- HUD -->
+  <div class="hud">
+
+    <div class="fighter-hud">
+      <div class="fighter-name">KAI</div>
+
+      <div class="hp">
+        <div id="playerHP"></div>
+      </div>
+
+      <div class="power">
+        <div id="playerPower"></div>
+      </div>
+    </div>
+
+    <div id="timer">60</div>
+
+    <div class="fighter-hud enemy-hud">
+      <div class="fighter-name">ROCCO</div>
+
+      <div class="hp">
+        <div id="enemyHP"></div>
+      </div>
+
+      <div class="power">
+        <div id="enemyPower"></div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- ARENA -->
+  <div id="arena">
+
+    <div class="floor"></div>
+
+    <!-- PLAYER -->
+    <div id="player" class="fighter player">
+
+      <div class="head"></div>
+
+      <div class="body">
+        <div class="arm left-arm"></div>
+        <div class="arm right-arm"></div>
+      </div>
+
+      <div class="leg left-leg"></div>
+      <div class="leg right-leg"></div>
+
+    </div>
+
+
+    <!-- ENEMY -->
+    <div id="enemy" class="fighter enemy">
+
+      <div class="head"></div>
+
+      <div class="body">
+        <div class="arm left-arm"></div>
+        <div class="arm right-arm"></div>
+      </div>
+
+      <div class="leg left-leg"></div>
+      <div class="leg right-leg"></div>
+
+    </div>
+
+  </div>
+
+
+  <!-- MESSAGE -->
+  <div id="message">FIGHT!</div>
+
+
+  <!-- MOBILE CONTROLS -->
+  <div class="controls">
+
+    <div class="movement">
+
+      <button id="leftBtn">◀</button>
+
+      <button id="rightBtn">▶</button>
+
+    </div>
+
+
+    <div class="attacks">
+
+      <button id="punchBtn">👊</button>
+
+      <button id="kickBtn">🦵</button>
+
+      <button id="blockBtn">🛡️</button>
+
+      <button id="dashBtn">💨</button>
+
+      <button id="specialBtn" class="special">
+        ⚡
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- GAME OVER -->
+  <div id="gameOver">
+
+    <div class="result" id="result">
+      YOU WIN
+    </div>
+
+    <button id="restartBtn">
+      PLAY AGAIN
+    </button>
+
+  </div>
+
+</div>
+
+<script src="game.js"></script>
+
+</body>
+</html>
