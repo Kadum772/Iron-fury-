@@ -2,27 +2,88 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>IRON FURY</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <div id="game">
+<div id="game">
 
-    <div class="hud">
+  <header>
+    <h1>IRON FURY</h1>
+    <div id="timer">60</div>
+  </header>
 
-      <div class="fighter-hud">
-        <div class="name">KAI</div>
+  <section class="health-bars">
 
-        <div class="hp">
-          <div id="playerHP"></div>
-        </div>
-
-        <div class="power">
-          <div id="playerPower"></div>
-        </div>
+    <div class="fighter-info">
+      <span>KAI</span>
+      <div class="bar">
+        <div id="player-hp"></div>
       </div>
+    </div>
 
-      <div id="timer">60</div>
+    <div class="fighter-info enemy-info">
+      <span>ROCCO</span>
+      <div class="bar">
+        <div id="enemy-hp"></div>
+      </div>
+    </div>
+
+  </section>
+
+  <main id="arena">
+
+    <div class="floor"></div>
+
+    <div id="player" class="fighter player">
+      <div class="head"></div>
+      <div class="torso"></div>
+      <div class="arm left-arm"></div>
+      <div class="arm right-arm"></div>
+      <div class="leg left-leg"></div>
+      <div class="leg right-leg"></div>
+    </div>
+
+    <div id="enemy" class="fighter enemy">
+      <div class="head"></div>
+      <div class="torso"></div>
+      <div class="arm left-arm"></div>
+      <div class="arm right-arm"></div>
+      <div class="leg left-leg"></div>
+      <div class="leg right-leg"></div>
+    </div>
+
+  </main>
+
+  <div id="message">FIGHT!</div>
+
+  <section class="controls">
+
+    <div class="movement">
+      <button id="left">◀</button>
+      <button id="right">▶</button>
+    </div>
+
+    <div class="attacks">
+      <button id="punch">👊</button>
+      <button id="kick">🦵</button>
+      <button id="block">🛡️</button>
+      <button id="special">⚡</button>
+    </div>
+
+  </section>
+
+  <div id="game-over" class="hidden">
+    <h2 id="result">YOU WIN!</h2>
+    <button id="restart">PLAY AGAIN</button>
+  </div>
+
+</div>
+
+<script src="game.js"></script>
+
+</body>
+</html>
