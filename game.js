@@ -1,16 +1,47 @@
-<div class="controls">
+let playerX = 20;
+let gameRunning = true;
 
-  <div class="movement">
-    <button id="leftBtn">◀</button>
-    <button id="rightBtn">▶</button>
-  </div>
+const player = document.getElementById("player");
 
-  <div class="attacks">
-    <button id="punchBtn">👊</button>
-    <button id="kickBtn">🦵</button>
-    <button id="blockBtn">🛡️</button>
-    <button id="dashBtn">💨</button>
-    <button id="specialBtn" class="special">⚡</button>
-  </div>
+function updatePlayer() {
+  player.style.left = playerX + "%";
+}
 
-</div>
+function moveLeft() {
+  if (!gameRunning) return;
+
+  playerX -= 4;
+
+  if (playerX < 2) {
+    playerX = 2;
+  }
+
+  updatePlayer();
+}
+
+function moveRight() {
+  if (!gameRunning) return;
+
+  playerX += 4;
+
+  if (playerX > 90) {
+    playerX = 90;
+  }
+
+  updatePlayer();
+}
+
+// LEFT BUTTON
+document.getElementById("leftBtn").addEventListener(
+  "click",
+  moveLeft
+);
+
+// RIGHT BUTTON
+document.getElementById("rightBtn").addEventListener(
+  "click",
+  moveRight
+);
+
+// START POSITION
+updatePlayer();
