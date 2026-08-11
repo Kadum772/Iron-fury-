@@ -1,1 +1,373 @@
-<script src="game.js"></script>
+        <div class="leg right-leg"></div>
+
+      </div>
+
+
+      <div id="enemy" class="fighter enemy">
+
+        <div class="head"></div>
+
+        <div class="body">
+          <div class="arm left-arm"></div>
+          <div class="arm right-arm"></div>
+        </div>
+
+        <div class="leg left-leg"></div>
+        <div class="leg right-leg"></div>
+
+      </div>
+
+    </div>
+
+
+    <div id="message">FIGHT!</div>
+
+
+    <div class="controls">
+
+      <div class="movement">
+        <button id="leftBtn">◀</button>
+        <button id="rightBtn">▶</button>
+      </div>
+
+      <div class="attacks">
+        <button id="punchBtn">👊</button>
+        <button id="kickBtn">🦵</button>
+        <button id="blockBtn">🛡️</button>
+        <button id="dashBtn">💨</button>
+        <button id="specialBtn">⚡</button>
+      </div>
+
+    </div>
+
+
+    <div id="gameOver" class="hidden">
+
+      <div id="result">YOU WIN!</div>
+
+      <button id="restartBtn">
+        PLAY AGAIN
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <script src="game.js"></script>
+
+</body>
+</html>
+⚠️ STOP HERE
+Commit this file.
+Do NOT put any CSS or JavaScript into this file.
+🔵 FILE 2 — style.css
+Now go back to the repository.
+style.css → ✏️ Edit → delete EVERYTHING
+Then paste ONLY this:
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #050505;
+  font-family: Arial, sans-serif;
+  color: white;
+}
+
+#game {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  max-width: 1000px;
+  margin: auto;
+  overflow: hidden;
+  background: linear-gradient(#252a33, #101010);
+}
+
+
+/* HUD */
+
+.hud {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  height: 75px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 20;
+}
+
+.fighter-hud {
+  width: 38%;
+}
+
+.enemy-hud {
+  text-align: right;
+}
+
+.name {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.hp {
+  height: 18px;
+  background: #333;
+  border: 2px solid white;
+}
+
+.hp div {
+  height: 100%;
+  width: 100%;
+  background: red;
+  transition: width 0.2s;
+}
+
+.power {
+  height: 7px;
+  margin-top: 5px;
+  background: #222;
+}
+
+.power div {
+  height: 100%;
+  width: 0%;
+  background: #18aaff;
+}
+
+#timer {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+
+/* ARENA */
+
+#arena {
+  position: absolute;
+  top: 90px;
+  left: 0;
+  right: 0;
+  bottom: 165px;
+  overflow: hidden;
+  background: linear-gradient(#3c4652, #17191d);
+}
+
+.floor {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 22%;
+  background: #151515;
+  border-top: 4px solid #555;
+}
+
+
+/* FIGHTERS */
+
+#player,
+#enemy {
+  position: absolute;
+  width: 70px;
+  height: 150px;
+  bottom: 20%;
+  z-index: 10;
+  transition: left 0.12s;
+}
+
+#player {
+  left: 20%;
+}
+
+#enemy {
+  left: 72%;
+  transform: scaleX(-1);
+}
+
+.head {
+  width: 42px;
+  height: 42px;
+  margin: auto;
+  border-radius: 50%;
+  background: #c98f68;
+  border: 2px solid #222;
+}
+
+.body {
+  position: relative;
+  width: 52px;
+  height: 65px;
+  margin: 2px auto;
+  border-radius: 10px;
+  background: #1976d2;
+}
+
+.enemy .body {
+  background: #c62828;
+}
+
+.arm {
+  position: absolute;
+  top: 8px;
+  width: 16px;
+  height: 58px;
+  border-radius: 10px;
+  background: #c98f68;
+}
+
+.left-arm {
+  left: -12px;
+}
+
+.right-arm {
+  right: -12px;
+}
+
+.leg {
+  position: absolute;
+  bottom: 0;
+  width: 18px;
+  height: 55px;
+  border-radius: 10px;
+  background: #222;
+}
+
+.left-leg {
+  left: 13px;
+}
+
+.right-leg {
+  right: 13px;
+}
+
+
+/* CONTROLS */
+
+.controls {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 5px;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  z-index: 50;
+}
+
+.movement {
+  display: flex;
+  gap: 8px;
+}
+
+.attacks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  width: 190px;
+}
+
+.controls button {
+  width: 55px;
+  height: 55px;
+  margin: 3px;
+  border: 2px solid #777;
+  border-radius: 50%;
+  background: #252a30;
+  color: white;
+  font-size: 21px;
+}
+
+.controls button:active {
+  transform: scale(0.88);
+}
+
+#specialBtn {
+  background: #7020a0;
+}
+
+
+/* MESSAGE */
+
+#message {
+  position: absolute;
+  top: 40%;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 35px;
+  font-weight: bold;
+  z-index: 30;
+  pointer-events: none;
+}
+
+
+/* GAME OVER */
+
+#gameOver {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.88);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 25px;
+}
+
+#gameOver.hidden {
+  display: none;
+}
+
+#result {
+  font-size: 45px;
+  font-weight: bold;
+}
+
+#restartBtn {
+  width: 190px;
+  height: 55px;
+  border: none;
+  border-radius: 10px;
+  background: #1976d2;
+  color: white;
+  font-size: 18px;
+}
+
+
+/* PHONE */
+
+@media (max-width: 500px) {
+
+  .controls {
+    height: 150px;
+  }
+
+  .controls button {
+    width: 48px;
+    height: 48px;
+    font-size: 18px;
+  }
+
+  .attacks {
+    width: 165px;
+  }
+
+  #message {
+    font-size: 30px;
+  }
+}
