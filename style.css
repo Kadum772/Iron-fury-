@@ -1,0 +1,110 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  touch-action: manipulation;
+}
+
+body {
+  background: #080808;
+  color: white;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+}
+
+#game {
+  width: 100vw;
+  height: 100vh;
+  max-width: 900px;
+  margin: auto;
+  position: relative;
+  background: linear-gradient(#20252d, #080808);
+  overflow: hidden;
+}
+
+.top {
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 10px;
+}
+
+.fighter {
+  width: 35%;
+}
+
+.name {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.enemy .name {
+  text-align: right;
+}
+
+.bar,
+.power {
+  height: 14px;
+  background: #333;
+  border: 1px solid #777;
+  margin-bottom: 5px;
+}
+
+.bar div {
+  height: 100%;
+  width: 100%;
+  background: #e33;
+  transition: width 0.2s;
+}
+
+.power div {
+  height: 100%;
+  width: 0%;
+  background: #39a9ff;
+}
+
+.timer {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+#arena {
+  position: absolute;
+  top: 90px;
+  bottom: 160px;
+  left: 0;
+  right: 0;
+  border-bottom: 8px solid #555;
+  background:
+    radial-gradient(circle at 50% 30%, #39414d 0, #171b21 45%, #080808 100%);
+}
+
+.character {
+  position: absolute;
+  width: 70px;
+  height: 150px;
+  bottom: 10px;
+}
+
+#player {
+  left: 20%;
+}
+
+#enemy {
+  left: 70%;
+  transform: scaleX(-1);
+}
+
+.head {
+  width: 42px;
+  height: 42px;
+  background: #d49a72;
+  border-radius: 50%;
+  margin: auto;
+}
+
+.body {
+  width: 55px;
+  height: 65px;
+  background: #236
