@@ -4,7 +4,7 @@
   padding: 0;
   user-select: none;
   -webkit-user-select: none;
-  touch-action: manipulation;
+  touch-action: none;
 }
 
 html,
@@ -14,9 +14,6 @@ body {
   overflow: hidden;
   background: #050505;
   font-family: Arial, sans-serif;
-}
-
-body {
   color: white;
 }
 
@@ -47,8 +44,6 @@ header h1 {
 
 #timer {
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
   top: 30px;
   font-size: 24px;
   font-weight: bold;
@@ -116,6 +111,8 @@ header h1 {
   border-top: 4px solid #555;
 }
 
+/* FIGHTERS */
+
 .fighter {
   position: absolute;
   width: 65px;
@@ -162,7 +159,6 @@ header h1 {
   height: 57px;
   border-radius: 10px;
   background: #c98c65;
-  transition: transform 0.15s;
 }
 
 .left-arm {
@@ -190,35 +186,61 @@ header h1 {
   right: 12px;
 }
 
+/* CONTROLS */
+
 .controls {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 5px;
-  height: 150px;
-  padding: 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  bottom: 0;
+  height: 165px;
   z-index: 50;
+  pointer-events: none;
 }
 
-.movement {
-  display: flex;
-  gap: 8px;
+/* JOYSTICK */
+
+#joystick {
+  position: absolute;
+  left: 18px;
+  bottom: 25px;
+  width: 115px;
+  height: 115px;
+  border: 3px solid #777;
+  border-radius: 50%;
+  background: rgba(30, 30, 30, 0.75);
+  pointer-events: auto;
 }
 
-.attacks {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  width: 180px;
+#joystick-knob {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 55px;
+  height: 55px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: #555;
+  border: 3px solid #aaa;
 }
 
-.controls button {
-  width: 52px;
-  height: 52px;
-  margin: 3px;
+/* ACTION BUTTONS */
+
+.actions {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  width: 190px;
+  display: grid;
+  grid-template-columns: repeat(3, 55px);
+  gap: 6px;
+  justify-content: end;
+  pointer-events: auto;
+}
+
+.actions button {
+  width: 55px;
+  height: 55px;
   border: 2px solid #777;
   border-radius: 50%;
   background: #252a30;
@@ -226,13 +248,23 @@ header h1 {
   font-size: 20px;
 }
 
-.controls button:active {
+.actions button:active {
   transform: scale(0.88);
 }
 
 #special {
   background: #7020a0;
 }
+
+#dash {
+  background: #333b45;
+}
+
+#jump {
+  background: #315b82;
+}
+
+/* MESSAGE */
 
 #message {
   position: absolute;
@@ -245,6 +277,8 @@ header h1 {
   z-index: 30;
   pointer-events: none;
 }
+
+/* GAME OVER */
 
 #game-over {
   position: absolute;
@@ -277,31 +311,26 @@ header h1 {
   font-weight: bold;
 }
 
-.attack-punch {
-  transform: translateX(12px);
-}
-
-.attack-kick {
-  transform: translateX(15px) rotate(-8deg);
-}
-
-.blocking {
-  filter: brightness(1.4);
-}
-
 @media (max-width: 500px) {
 
-  .controls {
-    height: 150px;
+  #joystick {
+    width: 105px;
+    height: 105px;
   }
 
-  .controls button {
-    width: 48px;
-    height: 48px;
+  #joystick-knob {
+    width: 50px;
+    height: 50px;
+  }
+
+  .actions {
+    width: 175px;
+    grid-template-columns: repeat(3, 50px);
+  }
+
+  .actions button {
+    width: 50px;
+    height: 50px;
     font-size: 18px;
-  }
-
-  .attacks {
-    width: 165px;
   }
 }
