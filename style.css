@@ -1,75 +1,9 @@
-        <div class="leg right-leg"></div>
-
-      </div>
-
-
-      <div id="enemy" class="fighter enemy">
-
-        <div class="head"></div>
-
-        <div class="body">
-          <div class="arm left-arm"></div>
-          <div class="arm right-arm"></div>
-        </div>
-
-        <div class="leg left-leg"></div>
-        <div class="leg right-leg"></div>
-
-      </div>
-
-    </div>
-
-
-    <div id="message">FIGHT!</div>
-
-
-    <div class="controls">
-
-      <div class="movement">
-        <button id="leftBtn">◀</button>
-        <button id="rightBtn">▶</button>
-      </div>
-
-      <div class="attacks">
-        <button id="punchBtn">👊</button>
-        <button id="kickBtn">🦵</button>
-        <button id="blockBtn">🛡️</button>
-        <button id="dashBtn">💨</button>
-        <button id="specialBtn">⚡</button>
-      </div>
-
-    </div>
-
-
-    <div id="gameOver" class="hidden">
-
-      <div id="result">YOU WIN!</div>
-
-      <button id="restartBtn">
-        PLAY AGAIN
-      </button>
-
-    </div>
-
-  </div>
-
-
-  <script src="game.js"></script>
-
-</body>
-</html>
-⚠️ STOP HERE
-Commit this file.
-Do NOT put any CSS or JavaScript into this file.
-🔵 FILE 2 — style.css
-Now go back to the repository.
-style.css → ✏️ Edit → delete EVERYTHING
-Then paste ONLY this:
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
   user-select: none;
+  -webkit-user-select: none;
   touch-action: manipulation;
 }
 
@@ -80,6 +14,9 @@ body {
   overflow: hidden;
   background: #050505;
   font-family: Arial, sans-serif;
+}
+
+body {
   color: white;
 }
 
@@ -87,81 +24,80 @@ body {
   position: relative;
   width: 100vw;
   height: 100vh;
-  max-width: 1000px;
-  margin: auto;
   overflow: hidden;
-  background: linear-gradient(#252a33, #101010);
+  background: linear-gradient(#202631, #080808);
 }
 
-
-/* HUD */
-
-.hud {
+header {
   position: absolute;
-  top: 10px;
-  left: 10px;
-  right: 10px;
-  height: 75px;
+  top: 5px;
+  left: 0;
+  right: 0;
+  height: 45px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   z-index: 20;
 }
 
-.fighter-hud {
-  width: 38%;
-}
-
-.enemy-hud {
-  text-align: right;
-}
-
-.name {
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-
-.hp {
-  height: 18px;
-  background: #333;
-  border: 2px solid white;
-}
-
-.hp div {
-  height: 100%;
-  width: 100%;
-  background: red;
-  transition: width 0.2s;
-}
-
-.power {
-  height: 7px;
-  margin-top: 5px;
-  background: #222;
-}
-
-.power div {
-  height: 100%;
-  width: 0%;
-  background: #18aaff;
+header h1 {
+  font-size: 20px;
+  letter-spacing: 4px;
 }
 
 #timer {
-  font-size: 28px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 30px;
+  font-size: 24px;
   font-weight: bold;
 }
 
+.health-bars {
+  position: absolute;
+  top: 50px;
+  left: 10px;
+  right: 10px;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  z-index: 20;
+}
 
-/* ARENA */
+.fighter-info {
+  width: 42%;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.enemy-info {
+  text-align: right;
+}
+
+.bar {
+  height: 17px;
+  margin-top: 4px;
+  background: #333;
+  border: 2px solid #aaa;
+  overflow: hidden;
+}
+
+.bar div {
+  width: 100%;
+  height: 100%;
+  background: #e32626;
+  transition: width 0.2s;
+}
 
 #arena {
   position: absolute;
-  top: 90px;
+  top: 85px;
   left: 0;
   right: 0;
   bottom: 165px;
   overflow: hidden;
-  background: linear-gradient(#3c4652, #17191d);
+  background: linear-gradient(#414b59, #15171a);
 }
 
 .floor {
@@ -169,22 +105,23 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  height: 22%;
-  background: #151515;
+  height: 20%;
+  background: repeating-linear-gradient(
+    90deg,
+    #111 0,
+    #111 50px,
+    #181818 51px,
+    #181818 100px
+  );
   border-top: 4px solid #555;
 }
 
-
-/* FIGHTERS */
-
-#player,
-#enemy {
+.fighter {
   position: absolute;
-  width: 70px;
-  height: 150px;
+  width: 65px;
+  height: 145px;
   bottom: 20%;
   z-index: 10;
-  transition: left 0.12s;
 }
 
 #player {
@@ -197,34 +134,35 @@ body {
 }
 
 .head {
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   margin: auto;
   border-radius: 50%;
-  background: #c98f68;
+  background: #c98c65;
   border: 2px solid #222;
 }
 
-.body {
+.torso {
   position: relative;
-  width: 52px;
-  height: 65px;
-  margin: 2px auto;
-  border-radius: 10px;
-  background: #1976d2;
+  width: 50px;
+  height: 62px;
+  margin: 3px auto;
+  border-radius: 9px;
+  background: #1769aa;
 }
 
-.enemy .body {
-  background: #c62828;
+.enemy .torso {
+  background: #a92323;
 }
 
 .arm {
   position: absolute;
-  top: 8px;
-  width: 16px;
-  height: 58px;
+  top: 7px;
+  width: 15px;
+  height: 57px;
   border-radius: 10px;
-  background: #c98f68;
+  background: #c98c65;
+  transition: transform 0.15s;
 }
 
 .left-arm {
@@ -239,21 +177,18 @@ body {
   position: absolute;
   bottom: 0;
   width: 18px;
-  height: 55px;
+  height: 52px;
   border-radius: 10px;
-  background: #222;
+  background: #202020;
 }
 
 .left-leg {
-  left: 13px;
+  left: 12px;
 }
 
 .right-leg {
-  right: 13px;
+  right: 12px;
 }
-
-
-/* CONTROLS */
 
 .controls {
   position: absolute;
@@ -261,10 +196,10 @@ body {
   right: 0;
   bottom: 5px;
   height: 150px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   z-index: 50;
 }
 
@@ -277,30 +212,27 @@ body {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
-  width: 190px;
+  width: 180px;
 }
 
 .controls button {
-  width: 55px;
-  height: 55px;
+  width: 52px;
+  height: 52px;
   margin: 3px;
   border: 2px solid #777;
   border-radius: 50%;
   background: #252a30;
   color: white;
-  font-size: 21px;
+  font-size: 20px;
 }
 
 .controls button:active {
   transform: scale(0.88);
 }
 
-#specialBtn {
+#special {
   background: #7020a0;
 }
-
-
-/* MESSAGE */
 
 #message {
   position: absolute;
@@ -308,20 +240,17 @@ body {
   left: 0;
   right: 0;
   text-align: center;
-  font-size: 35px;
+  font-size: 32px;
   font-weight: bold;
   z-index: 30;
   pointer-events: none;
 }
 
-
-/* GAME OVER */
-
-#gameOver {
+#game-over {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.88);
   z-index: 100;
+  background: rgba(0, 0, 0, 0.9);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -329,27 +258,36 @@ body {
   gap: 25px;
 }
 
-#gameOver.hidden {
+#game-over.hidden {
   display: none;
 }
 
 #result {
-  font-size: 45px;
-  font-weight: bold;
+  font-size: 42px;
 }
 
-#restartBtn {
-  width: 190px;
+#restart {
+  width: 180px;
   height: 55px;
-  border: none;
+  border: 0;
   border-radius: 10px;
   background: #1976d2;
   color: white;
   font-size: 18px;
+  font-weight: bold;
 }
 
+.attack-punch {
+  transform: translateX(12px);
+}
 
-/* PHONE */
+.attack-kick {
+  transform: translateX(15px) rotate(-8deg);
+}
+
+.blocking {
+  filter: brightness(1.4);
+}
 
 @media (max-width: 500px) {
 
@@ -365,9 +303,5 @@ body {
 
   .attacks {
     width: 165px;
-  }
-
-  #message {
-    font-size: 30px;
   }
 }
