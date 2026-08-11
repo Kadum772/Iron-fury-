@@ -1,22 +1,28 @@
-.controls {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 8px;
-  height: 145px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px;
-  z-index: 40;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IRON FURY</title>
+  <link rel="stylesheet" href="style.css">
+</head>
 
-.controls button {
-  width: 58px;
-  height: 58px;
-  border: 2px solid #555;
-  border-radius: 50%;
-  background: #252a30;
-  color: white;
-  font-size: 23px;
-}
+<body>
+
+  <div id="game">
+
+    <div class="hud">
+
+      <div class="fighter-hud">
+        <div class="name">KAI</div>
+
+        <div class="hp">
+          <div id="playerHP"></div>
+        </div>
+
+        <div class="power">
+          <div id="playerPower"></div>
+        </div>
+      </div>
+
+      <div id="timer">60</div>
