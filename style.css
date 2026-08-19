@@ -226,10 +226,11 @@ header h1 {
 
 /* ACTION BUTTONS */
 
+
 .actions {
   position: absolute;
   right: 12px;
-  bottom: 130px;
+  bottom: 300px;
   width: 190px;
   display: grid;
   grid-template-columns: repeat(3, 55px);
@@ -237,7 +238,6 @@ header h1 {
   justify-content: end;
   pointer-events: auto;
 }
-
 .actions button {
   width: 55px;
   height: 55px;
