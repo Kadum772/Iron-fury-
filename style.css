@@ -230,7 +230,7 @@ header h1 {
 .actions {
   position: fixed;
   right: 18px;
-  top: 42%;
+  top: 48%;
   width: 210px;
   display: grid;
   grid-template-columns: repeat(3, 60px);
