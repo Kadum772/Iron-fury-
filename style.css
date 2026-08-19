@@ -227,23 +227,24 @@ header h1 {
 /* ACTION BUTTONS */
 
 
-.actions {.actions {
+.actions {
   position: fixed;
-  right: 15px;
-  top: 57%;
-  width: 190px;
+  right: 18px;
+  top: 42%;
+  width: 210px;
   display: grid;
-  grid-template-columns: repeat(3, 55px);
-  gap: 12px;
+  grid-template-columns: repeat(3, 60px);
+  gap: 14px;
   justify-content: end;
   pointer-events: auto;
   z-index: 60;
+}
 
 
 }
 .actions button {
-  width: 55px;
-  height: 55px;
+  width:60px;
+  height: 60px;
   border: 2px solid #777;
   border-radius: 50%;
   background: #252a30;
