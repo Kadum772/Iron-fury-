@@ -229,7 +229,7 @@ header h1 {
 .actions {
   position: absolute;
   right: 12px;
-  bottom: 35px;
+  bottom: 130px;
   width: 190px;
   display: grid;
   grid-template-columns: repeat(3, 55px);
