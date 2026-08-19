@@ -269,7 +269,25 @@ function dash() {
 
 /* PUNCH */
 
-function punch() {
+function punch() {function kick() {
+  if (!gameRunning) return;
+
+  if (distance() > 30) {
+    showMessage("TOO FAR!");
+    return;
+  }
+
+  enemyHP -= 12;
+
+  if (enemyHP < 0) {
+    enemyHP = 0;
+  }
+
+  showMessage("KICK!");
+
+  updateScreen();
+  checkWinner();
+}
 
   if (!gameRunning) return;
 
