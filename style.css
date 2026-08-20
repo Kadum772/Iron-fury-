@@ -181,7 +181,81 @@ header h1 {
 .left-leg {
   left: 12px;
 }
+/* FIGHTER GRAPHICS UPGRADE */
 
+.fighter {
+  width: 72px;
+  height: 155px;
+  filter: drop-shadow(0 8px 4px rgba(0,0,0,0.45));
+}
+
+.head {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  margin: auto;
+  border: 2px solid #222;
+  box-shadow: inset -5px -5px 0 rgba(0,0,0,0.15);
+}
+
+.torso {
+  width: 52px;
+  height: 62px;
+  margin: 3px auto 0;
+  border-radius: 12px 12px 7px 7px;
+  border: 2px solid #222;
+  box-shadow: inset -7px -4px 0 rgba(0,0,0,0.12);
+}
+
+.arm {
+  width: 19px;
+  height: 58px;
+  border-radius: 12px;
+  border: 2px solid #222;
+  box-shadow: inset -4px -3px 0 rgba(0,0,0,0.15);
+}
+
+.leg {
+  width: 20px;
+  height: 58px;
+  border-radius: 10px;
+  border: 2px solid #151515;
+  box-shadow: inset -4px -3px 0 rgba(0,0,0,0.2);
+}
+
+/* PLAYER */
+#player .head {
+  background: #c98c65;
+}
+
+#player .torso {
+  background: #1769aa;
+}
+
+#player .arm {
+  background: #c98c65;
+}
+
+#player .leg {
+  background: #181818;
+}
+
+/* ENEMY */
+#enemy .head {
+  background: #c98c65;
+}
+
+#enemy .torso {
+  background: #b32626;
+}
+
+#enemy .arm {
+  background: #c98c65;
+}
+
+#enemy .leg {
+  background: #181818;
+}
 .right-leg {
   right: 12px;
 }
