@@ -3,92 +3,77 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>IRON FURY</title>
+  <title>Stick Fury</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<div id="game">
+  <div id="game">
 
-  <header>
-    <h1>IRON FURY</h1>
-    <div id="timer">60</div>
-  </header>
+    <div id="hud">
+      <div class="fighter-name">PLAYER</div>
+      <div class="health">
+        <div id="player-health"></div>
+      </div>
 
-  <section class="health-bars">
+      <div id="timer">60</div>
 
-    <div class="fighter-info">
-      <span>KAI</span>
-      <div class="bar">
-        <div id="player-hp"></div>
+      <div class="fighter-name enemy-name">ENEMY</div>
+      <div class="health enemy-health">
+        <div id="enemy-health"></div>
       </div>
     </div>
 
-    <div class="fighter-info enemy-info">
-      <span>ROCCO</span>
-      <div class="bar">
-        <div id="enemy-hp"></div>
+    <div id="arena">
+
+      <div id="player" class="fighter player">
+        <div class="head"></div>
+        <div class="body"></div>
+        <div class="arm arm-left"></div>
+        <div class="arm arm-right"></div>
+        <div class="leg leg-left"></div>
+        <div class="leg leg-right"></div>
       </div>
-    </div>
 
-  </section>
+      <div id="enemy" class="fighter enemy">
+        <div class="head"></div>
+        <div class="body"></div>
+        <div class="arm arm-left"></div>
+        <div class="arm arm-right"></div>
+        <div class="leg leg-left"></div>
+        <div class="leg leg-right"></div>
+      </div>
 
-  <main id="arena">
-
-    <div class="floor"></div>
-
-    <div id="player" class="fighter player">
-      <div class="head"></div>
-      <div class="torso"></div>
-      <div class="arm left-arm"></div>
-      <div class="arm right-arm"></div>
-      <div class="leg left-leg"></div>
-      <div class="leg right-leg"></div>
-    </div>
-
-    <div id="enemy" class="fighter enemy">
-      <div class="head"></div>
-      <div class="torso"></div>
-      <div class="arm left-arm"></div>
-      <div class="arm right-arm"></div>
-      <div class="leg left-leg"></div>
-      <div class="leg right-leg"></div>
-    </div>
-
-  </main>
-
-  <div id="message">FIGHT!</div>
-
-  <section class="controls">
-
-    <!-- JOYSTICK -->
-    <div id="joystick">
-      <div id="joystick-knob"></div>
-    </div>
-
-    <!-- ACTION BUTTONS -->
-    <div class="actions">
-
-      <button id="jump">⬆</button>
-      <button id="dash">💨</button>
-      <button id="punch">👊</button>
-      <button id="kick">🦵</button>
-      <button id="block">🛡️</button>
-      <button id="special">⚡</button>
+      <div id="message"></div>
 
     </div>
 
-  </section>
+    <!-- MOBILE CONTROLS -->
 
-  <div id="game-over" class="hidden">
-    <h2 id="result">YOU WIN!</h2>
-    <button id="restart">PLAY AGAIN</button>
+    <div id="controls">
+
+      <div id="joystick">
+        <div id="joystick-knob"></div>
+      </div>
+
+      <div id="buttons">
+
+        <button id="jump">⬆</button>
+        <button id="dash">💨</button>
+        <button id="punch">👊</button>
+
+        <button id="kick">🦵</button>
+        <button id="block">🛡️</button>
+        <button id="special">⚡</button>
+
+      </div>
+
+    </div>
+
   </div>
 
-</div>
-
-<script src="game.js"></script>
+  <script src="game.js"></script>
 
 </body>
 </html>
