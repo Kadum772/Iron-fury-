@@ -125,14 +125,9 @@ header h1 {
   filter: drop-shadow(0 10px 5px rgba(0,0,0,0.55));
 }
 
-#player {
-  left: 20% !important;
-  transform: none !important;
-}
 
-#enemy {
-  left: 72% !important;
-  transform: scaleX(-1) !important;
+
+
 }
 
 /* HEAD */
