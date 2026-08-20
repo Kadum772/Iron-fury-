@@ -276,8 +276,13 @@ function punch() {
     enemyHP -= 10;
 
     if (enemyHP < 0) {
-      enemyHP = 0;
-    }
+  enemyHP = 0;
+}
+
+if (enemyHP === 0) {
+  gameRunning = false;
+  showMessage("YOU WIN!");
+}
 
     updateHealth();
 
