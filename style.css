@@ -112,152 +112,200 @@ header h1 {
 }
 
 /* FIGHTERS */
+/* =========================
+   IRON FURY - FIGHTERS
+   ========================= */
 
 .fighter {
-  position: absolute;
-  width: 65px;
-  height: 145px;
-  bottom: 20%;
-  z-index: 10;
+  position: absolute !important;
+  width: 78px !important;
+  height: 165px !important;
+  bottom: 20% !important;
+  z-index: 10 !important;
+  filter: drop-shadow(0 10px 5px rgba(0,0,0,0.55));
 }
 
 #player {
-  left: 20%;
+  left: 20% !important;
+  transform: none !important;
 }
 
 #enemy {
-  left: 72%;
-  transform: scaleX(-1);
+  left: 72% !important;
+  transform: scaleX(-1) !important;
 }
 
-.head {
-  width: 40px;
-  height: 40px;
-  margin: auto;
-  border-radius: 50%;
-  background: #c98c65;
-  border: 2px solid #222;
+/* HEAD */
+.fighter .head {
+  position: absolute !important;
+  top: 0 !important;
+  left: 17px !important;
+
+  width: 44px !important;
+  height: 44px !important;
+
+  margin: 0 !important;
+  border-radius: 50% !important;
+
+  background: #c98c65 !important;
+  border: 3px solid #181818 !important;
+
+  box-shadow:
+    inset -6px -5px 0 rgba(0,0,0,0.16),
+    2px 3px 0 rgba(0,0,0,0.35) !important;
 }
 
-.torso {
-  position: relative;
-  width: 50px;
-  height: 62px;
-  margin: 3px auto;
-  border-radius: 9px;
-  background: #1769aa;
+/* BODY */
+.fighter .torso {
+  position: absolute !important;
+  top: 46px !important;
+  left: 9px !important;
+
+  width: 60px !important;
+  height: 70px !important;
+
+  margin: 0 !important;
+  border-radius: 15px 15px 9px 9px !important;
+
+  border: 3px solid #181818 !important;
+
+  box-shadow:
+    inset -8px -6px 0 rgba(0,0,0,0.16),
+    3px 4px 0 rgba(0,0,0,0.3) !important;
 }
 
-.enemy .torso {
-  background: #a92323;
+/* ARMS */
+.fighter .arm {
+  position: absolute !important;
+
+  width: 20px !important;
+  height: 62px !important;
+
+  margin: 0 !important;
+  border-radius: 12px !important;
+
+  background: #c98c65 !important;
+  border: 3px solid #181818 !important;
+
+  box-shadow:
+    inset -4px -4px 0 rgba(0,0,0,0.15),
+    2px 3px 0 rgba(0,0,0,0.3) !important;
 }
 
-.arm {
-  position: absolute;
-  top: 7px;
-  width: 15px;
-  height: 57px;
-  border-radius: 10px;
-  background: #c98c65;
+/* ARM POSITIONS */
+.fighter .left-arm {
+  left: -5px !important;
+  top: 48px !important;
 }
 
-.left-arm {
-  left: -12px;
+.fighter .right-arm {
+  right: -5px !important;
+  top: 48px !important;
 }
 
-.right-arm {
-  right: -12px;
+/* LEGS */
+.fighter .leg {
+  position: absolute !important;
+  bottom: 0 !important;
+
+  width: 23px !important;
+  height: 60px !important;
+
+  border-radius: 10px !important;
+  background: #181818 !important;
+  border: 3px solid #111 !important;
+
+  box-shadow:
+    inset -5px -4px 0 rgba(0,0,0,0.25),
+    2px 3px 0 rgba(0,0,0,0.3) !important;
 }
 
-.leg {
-  position: absolute;
-  bottom: 0;
-  width: 18px;
-  height: 52px;
-  border-radius: 10px;
-  background: #202020;
+.fighter .left-leg {
+  left: 12px !important;
 }
 
-.left-leg {
-  left: 12px;
-}
-/* FIGHTER GRAPHICS UPGRADE */
-
-.fighter {
-  width: 72px;
-  height: 155px;
-  filter: drop-shadow(0 8px 4px rgba(0,0,0,0.45));
+.fighter .right-leg {
+  right: 12px !important;
 }
 
-.head {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  margin: auto;
-  border: 2px solid #222;
-  box-shadow: inset -5px -5px 0 rgba(0,0,0,0.15);
-}
-
-.torso {
-  width: 52px;
-  height: 62px;
-  margin: 3px auto 0;
-  border-radius: 12px 12px 7px 7px;
-  border: 2px solid #222;
-  box-shadow: inset -7px -4px 0 rgba(0,0,0,0.12);
-}
-
-.arm {
-  width: 19px;
-  height: 58px;
-  border-radius: 12px;
-  border: 2px solid #222;
-  box-shadow: inset -4px -3px 0 rgba(0,0,0,0.15);
-}
-
-.leg {
-  width: 20px;
-  height: 58px;
-  border-radius: 10px;
-  border: 2px solid #151515;
-  box-shadow: inset -4px -3px 0 rgba(0,0,0,0.2);
-}
-
-/* PLAYER */
-#player .head {
-  background: #c98c65;
-}
-
+/* PLAYER COLORS */
 #player .torso {
-  background: #1769aa;
+  background: linear-gradient(
+    135deg,
+    #2385c7,
+    #07518d
+  ) !important;
 }
 
-#player .arm {
-  background: #c98c65;
-}
-
-#player .leg {
-  background: #181818;
-}
-
-/* ENEMY */
-#enemy .head {
-  background: #c98c65;
-}
-
+/* ENEMY COLORS */
 #enemy .torso {
-  background: #b32626;
+  background: linear-gradient(
+    135deg,
+    #d83232,
+    #7e1010
+  ) !important;
 }
 
-#enemy .arm {
-  background: #c98c65;
+/* FIGHTER BELT */
+#player .torso::after,
+#enemy .torso::after {
+  content: "" !important;
+  position: absolute !important;
+  left: -2px !important;
+  bottom: 9px !important;
+
+  width: 100% !important;
+  height: 8px !important;
+
+  background: #222 !important;
+  border-top: 2px solid #111 !important;
+  border-bottom: 2px solid #111 !important;
 }
 
-#enemy .leg {
-  background: #181818;
+/* SHOULDER PADS */
+#player .torso::before,
+#enemy .torso::before {
+  content: "" !important;
+  position: absolute !important;
+  left: -5px !important;
+  top: 3px !important;
+
+  width: calc(100% + 10px) !important;
+  height: 13px !important;
+
+  border-radius: 10px !important;
+  background: rgba(255,255,255,0.12) !important;
 }
-.right-leg {
-  right: 12px;
+
+/* HEAD HIGHLIGHT */
+.fighter .head::after {
+  content: "" !important;
+  position: absolute !important;
+
+  width: 10px !important;
+  height: 6px !important;
+
+  top: 8px !important;
+  left: 9px !important;
+
+  border-radius: 50% !important;
+  background: rgba(255,255,255,0.25) !important;
+}
+
+/* SIMPLE GLOVES */
+.fighter .arm::after {
+  content: "" !important;
+  position: absolute !important;
+
+  width: 24px !important;
+  height: 20px !important;
+
+  left: -4px !important;
+  bottom: -4px !important;
+
+  border-radius: 50% !important;
+  background: #171717 !important;
+  border: 2px solid #090909 !important;
 }
 
 /* CONTROLS */
