@@ -1,52 +1,70 @@
+const player = document.getElementById("player");
+const enemy = document.getElementById("enemy");
+
+const playerHealthBar =
+  document.getElementById("player-health");
+
+const enemyHealthBar =
+  document.getElementById("enemy-health");
+
+const timerElement =
+  document.getElementById("timer");
+
+const message =
+  document.getElementById("message");
+
+const joystick =
+  document.getElementById("joystick");
+
+const joystickKnob =
+  document.getElementById("joystick-knob");
+
+const jumpButton =
+  document.getElementById("jump");
+
+const dashButton =
+  document.getElementById("dash");
+
+const punchButton =
+  document.getElementById("punch");
+
+const kickButton =
+  document.getElementById("kick");
+
+const blockButton =
+  document.getElementById("block");
+
+const specialButton =
+  document.getElementById("special");
+
+
+/* =========================
+   GAME VARIABLES
+========================= */
+
+let playerX = 18;
+let enemyX = 72;
+
 let playerHP = 100;
 let enemyHP = 100;
 
-let playerX = 20;
-let enemyX = 72;
+let joystickX = 0;
+let joystickY = 0;
 
-let playerY = 0;
-let velocityY = 0;
-
-let playerBlocking = false;
+let blocking = false;
 let gameRunning = true;
 
 let facingRight = true;
 
-const player = document.getElementById("player");
-const enemy = document.getElementById("enemy");
 
-const playerHPBar = document.getElementById("player-hp");
-const enemyHPBar = document.getElementById("enemy-hp");
+/* =========================
+   POSITION
+========================= */
 
-const timerElement = document.getElementById("timer");
-const message = document.getElementById("message");
-
-const gameOver = document.getElementById("game-over");
-const result = document.getElementById("result");
-
-const joystick = document.getElementById("joystick");
-const knob = document.getElementById("joystick-knob");
-
-let joystickActive = false;
-let joystickX = 0;
-
-
-/* SCREEN */
-
-function updateScreen() {
+function updatePositions() {
 
   player.style.left = playerX + "%";
-
-  player.style.bottom =
-    "calc(20% + " + playerY + "px)";
-
   enemy.style.left = enemyX + "%";
-
-  playerHPBar.style.width =
-    playerHP + "%";
-
-  enemyHPBar.style.width =
-    enemyHP + "%";
 
   if (facingRight) {
     player.style.transform = "scaleX(1)";
@@ -56,133 +74,60 @@ function updateScreen() {
 }
 
 
-/* MESSAGE */
+/* =========================
+   DISTANCE
+========================= */
+
+function getDistance() {
+  return Math.abs(playerX - enemyX);
+}
+
+
+/* =========================
+   MESSAGE
+========================= */
 
 function showMessage(text) {
 
   message.textContent = text;
 
-  setTimeout(function () {
-
-    if (gameRunning) {
-      message.textContent = "";
-    }
-
+  setTimeout(() => {
+    message.textContent = "";
   }, 500);
 }
 
 
-/* DISTANCE */
+/* =========================
+   HEALTH
+========================= */
 
-function distance() {
+function updateHealth() {
 
-  return Math.abs(playerX - enemyX);
+  playerHealthBar.style.width =
+    playerHP + "%";
+
+  enemyHealthBar.style.width =
+    enemyHP + "%";
 }
 
 
-/* JOYSTICK */
+/* =========================
+   PLAYER MOVEMENT
+========================= */
 
-function handleJoystick(clientX) {
-
-  const rect =
-    joystick.getBoundingClientRect();
-
-  const centerX =
-    rect.left + rect.width / 2;
-
-  let difference =
-    clientX - centerX;
-
-  const maximum =
-    rect.width / 2 - 25;
-
-  if (difference > maximum) {
-    difference = maximum;
-  }
-
-  if (difference < -maximum) {
-    difference = -maximum;
-  }
-
-  joystickX =
-    difference / maximum;
-
-  knob.style.transform =
-    "translate(calc(-50% + " +
-    difference +
-    "px), -50%)";
-}
-
-
-joystick.addEventListener(
-  "pointerdown",
-  function(event) {
-
-    joystickActive = true;
-
-    joystick.setPointerCapture(
-      event.pointerId
-    );
-
-    handleJoystick(event.clientX);
-  }
-);
-
-
-joystick.addEventListener(
-  "pointermove",
-  function(event) {
-
-    if (!joystickActive) return;
-
-    handleJoystick(event.clientX);
-  }
-);
-
-
-joystick.addEventListener(
-  "pointerup",
-  function() {
-
-    joystickActive = false;
-
-    joystickX = 0;
-
-    knob.style.transform =
-      "translate(-50%, -50%)";
-  }
-);
-
-
-joystick.addEventListener(
-  "pointercancel",
-  function() {
-
-    joystickActive = false;
-
-    joystickX = 0;
-
-    knob.style.transform =
-      "translate(-50%, -50%)";
-  }
-);
-
-
-
-/* MOVEMENT */
-
-setInterval(function () {
+function movePlayer() {
 
   if (!gameRunning) return;
 
-  const speed = 1.5;
+  const speed = 0.7;
 
-  if (joystickX < -0.15) {
+  if (joystickX < -0.2) {
+
     playerX -= speed;
     facingRight = false;
-  }
 
-  if (joystickX > 0.15) {
+  } else if (joystickX > 0.2) {
+
     playerX += speed;
     facingRight = true;
   }
@@ -197,387 +142,363 @@ setInterval(function () {
     playerX = 92;
   }
 
-  /* APPLY POSITION */
+  /* WALK ANIMATION */
 
-  player.style.left = playerX + "%";
-
-  if (facingRight) {
-    player.style.transform = "scaleX(1)";
+  if (Math.abs(joystickX) > 0.2) {
+    player.classList.add("walking");
   } else {
-    player.style.transform = "scaleX(-1)";
+    player.classList.remove("walking");
   }
 
-}, 30);
-
-
-/* JUMP */
-
-function jump() {
-
-  if (!gameRunning) return;
-
-  if (playerY !== 0) return;
-
-  velocityY = 13;
-
-  showMessage("JUMP!");
+  updatePositions();
 }
 
 
-setInterval(function() {
+/* =========================
+   GAME LOOP
+========================= */
+
+setInterval(movePlayer, 30);
+
+
+/* =========================
+   JOYSTICK
+========================= */
+
+let joystickActive = false;
+
+function handleJoystick(event) {
+
+  if (!joystickActive) return;
+
+  const rect =
+    joystick.getBoundingClientRect();
+
+  const point =
+    event.touches
+      ? event.touches[0]
+      : event;
+
+  let dx =
+    point.clientX -
+    (rect.left + rect.width / 2);
+
+  let dy =
+    point.clientY -
+    (rect.top + rect.height / 2);
+
+  const maxDistance =
+    rect.width / 2 - 25;
+
+  const distance =
+    Math.sqrt(dx * dx + dy * dy);
+
+  if (distance > maxDistance) {
+
+    dx =
+      dx / distance *
+      maxDistance;
+
+    dy =
+      dy / distance *
+      maxDistance;
+  }
+
+  joystickKnob.style.transform =
+    `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+
+  joystickX =
+    dx / maxDistance;
+
+  joystickY =
+    dy / maxDistance;
+}
+
+
+joystick.addEventListener(
+  "touchstart",
+  (event) => {
+
+    joystickActive = true;
+
+    handleJoystick(event);
+
+  },
+  { passive: false }
+);
+
+
+joystick.addEventListener(
+  "touchmove",
+  (event) => {
+
+    event.preventDefault();
+
+    handleJoystick(event);
+
+  },
+  { passive: false }
+);
+
+
+joystick.addEventListener(
+  "touchend",
+  () => {
+
+    joystickActive = false;
+
+    joystickX = 0;
+    joystickY = 0;
+
+    joystickKnob.style.transform =
+      "translate(-50%, -50%)";
+
+  }
+);
+
+
+/* =========================
+   PUNCH
+========================= */
+
+function punch() {
 
   if (!gameRunning) return;
 
-  if (playerY > 0 || velocityY > 0) {
+  player.classList.add("punching");
 
-    playerY += velocityY;
+  setTimeout(() => {
+    player.classList.remove("punching");
+  }, 180);
 
-    velocityY -= 0.8;
+  if (getDistance() < 16) {
 
-    if (playerY <= 0) {
+    enemyHP -= 10;
 
-      playerY = 0;
-      velocityY = 0;
+    if (enemyHP < 0) {
+      enemyHP = 0;
     }
 
-    updateScreen();
+    updateHealth();
+
+    showMessage("HIT!");
   }
-
-}, 30);
-
-
-/* DASH */
-
-function dash() {
-
-  if (!gameRunning) return;
-
-  if (facingRight) {
-    playerX += 10;
-  } else {
-    playerX -= 10;
-  }
-
-  if (playerX < 2) {
-    playerX = 2;
-  }
-
-  if (playerX > 92) {
-    playerX = 92;
-  }
-
-  showMessage("DASH!");
-
-  updateScreen();
 }
 
-
-/* PUNCH */
-
-function punch() {function kick() {
-  if (!gameRunning) return;
-
-  if (distance() > 30) {
-    showMessage("TOO FAR!");
-    return;
-  }
-
-  enemyHP -= 12;
-
-  if (enemyHP < 0) {
-    enemyHP = 0;
-  }
-
-  showMessage("KICK!");
-
-  updateScreen();
-  checkWinner();
-}
-
-  if (!gameRunning) return;
-
-  if (distance() > 25) {
-
-    showMessage("TOO FAR!");
-
-    return;
-  }
-
-  enemyHP -= 8;
-
-  if (enemyHP < 0) {
-    enemyHP = 0;
-  }
-
-  showMessage("PUNCH!");
-
-  updateScreen();
-
-  checkWinner();
-}
+punchButton.addEventListener(
+  "click",
+  punch
+);
 
 
-/* KICK */
+/* =========================
+   KICK
+========================= */
 
 function kick() {
 
   if (!gameRunning) return;
 
-  if (distance() > 30) {
+  player.classList.add("kicking");
 
-    showMessage("TOO FAR!");
+  setTimeout(() => {
+    player.classList.remove("kicking");
+  }, 250);
 
-    return;
+  if (getDistance() < 18) {
+
+    enemyHP -= 15;
+
+    if (enemyHP < 0) {
+      enemyHP = 0;
+    }
+
+    updateHealth();
+
+    showMessage("KICK!");
   }
-
-  enemyHP -= 12;
-
-  if (enemyHP < 0) {
-    enemyHP = 0;
-  }
-
-  showMessage("KICK!");
-
-  updateScreen();
-
-  checkWinner();
 }
 
+kickButton.addEventListener(
+  "click",
+  kick
+);
 
-/* BLOCK */
 
-function block() {
+/* =========================
+   BLOCK
+========================= */
+
+function startBlock() {
+
+  blocking = true;
+
+  player.classList.add("blocking");
+}
+
+function stopBlock() {
+
+  blocking = false;
+
+  player.classList.remove("blocking");
+}
+
+blockButton.addEventListener(
+  "touchstart",
+  startBlock
+);
+
+blockButton.addEventListener(
+  "touchend",
+  stopBlock
+);
+
+blockButton.addEventListener(
+  "mousedown",
+  startBlock
+);
+
+blockButton.addEventListener(
+  "mouseup",
+  stopBlock
+);
+
+
+/* =========================
+   JUMP
+========================= */
+
+function jump() {
 
   if (!gameRunning) return;
 
-  playerBlocking = true;
+  player.style.bottom = "45%";
 
-  showMessage("BLOCK!");
+  setTimeout(() => {
 
-  setTimeout(function() {
+    player.style.bottom = "27%";
 
-    playerBlocking = false;
-
-  }, 800);
+  }, 350);
 }
 
+jumpButton.addEventListener(
+  "click",
+  jump
+);
 
-/* SPECIAL */
+
+/* =========================
+   DASH
+========================= */
+
+function dash() {
+
+  if (!gameRunning) return;
+
+  player.classList.add("dashing");
+
+  if (facingRight) {
+    playerX += 7;
+  } else {
+    playerX -= 7;
+  }
+
+  if (playerX < 2) playerX = 2;
+  if (playerX > 92) playerX = 92;
+
+  updatePositions();
+
+  setTimeout(() => {
+
+    player.classList.remove("dashing");
+
+  }, 180);
+}
+
+dashButton.addEventListener(
+  "click",
+  dash
+);
+
+
+/* =========================
+   SPECIAL
+========================= */
 
 function special() {
 
   if (!gameRunning) return;
 
-  if (distance() > 35) {
+  if (getDistance() < 20) {
+
+    enemyHP -= 25;
+
+    if (enemyHP < 0) {
+      enemyHP = 0;
+    }
+
+    updateHealth();
+
+    showMessage("SPECIAL!");
+
+  } else {
 
     showMessage("TOO FAR!");
-
-    return;
-  }
-
-  enemyHP -= 25;
-
-  if (enemyHP < 0) {
-    enemyHP = 0;
-  }
-
-  showMessage("SPECIAL!");
-
-  updateScreen();
-
-  checkWinner();
-}
-
-
-/* ENEMY */
-
-function enemyAttack() {
-
-  if (!gameRunning) return;
-
-  if (distance() > 28) {
-
-    if (enemyX > playerX) {
-      enemyX -= 2;
-    } else {
-      enemyX += 2;
-    }
-
-    updateScreen();
-
-    return;
-  }
-
-  let damage = 7;
-
-  if (playerBlocking) {
-    damage = 2;
-  }
-
-  playerHP -= damage;
-
-  if (playerHP < 0) {
-    playerHP = 0;
-  }
-
-  showMessage("ROCCO ATTACK!");
-
-  updateScreen();
-
-  checkWinner();
-}
-
-
-/* WIN / LOSE */
-
-function checkWinner() {
-
-  if (enemyHP <= 0) {
-
-    endGame("YOU WIN!");
-
-    return;
-  }
-
-  if (playerHP <= 0) {
-
-    endGame("YOU LOSE!");
   }
 }
 
-
-function endGame(text) {
-
-  gameRunning = false;
-
-  result.textContent = text;
-
-  gameOver.classList.remove(
-    "hidden"
-  );
-}
-
-
-/* RESTART */
-
-function restartGame() {
-
-  playerHP = 100;
-  enemyHP = 100;
-
-  playerX = 20;
-  enemyX = 72;
-
-  playerY = 0;
-  velocityY = 0;
-
-  playerBlocking = false;
-  gameRunning = true;
-
-  timeLeft = 60;
-
-  gameOver.classList.add(
-    "hidden"
-  );
-
-  message.textContent =
-    "FIGHT!";
-
-  updateScreen();
-
-  setTimeout(function() {
-
-    message.textContent = "";
-
-  }, 800);
-}
-
-
-/* TIMER */
-
-let timeLeft = 60;
-
-setInterval(function() {
-
-  if (!gameRunning) return;
-
-  timeLeft--;
-
-  timerElement.textContent =
-    timeLeft;
-
-  if (timeLeft <= 0) {
-
-    if (playerHP > enemyHP) {
-      endGame("YOU WIN!");
-    }
-
-    else if (enemyHP > playerHP) {
-      endGame("YOU LOSE!");
-    }
-
-    else {
-      endGame("DRAW!");
-    }
-  }
-
-}, 1000);
-
-
-/* ENEMY AI */
-
-setInterval(function() {
-
-  enemyAttack();
-
-}, 1500);
-
-
-/* BUTTONS */
-
-document.getElementById("jump")
-  .addEventListener(
-    "click",
-    jump
-  );
-
-document.getElementById("dash")
-  .addEventListener(
-    "click",
-    dash
-  );
-
-document.getElementById("punch")
-  .addEventListener(
-    "click",
-    punch
-  );
-
-document.getElementById("kick")
-  .addEventListener(
-    "click",
-    kick
-  );
-
-document.getElementById("block")
-  .addEventListener(
-    "click",
-    block
-  );
-
-document.getElementById("special")
-  .addEventListener(
-    "click",
-    special
-  );
-
-document.getElementById("restart")
-  .addEventListener(
-    "click",
-    restartGame
+specialButton.addEventListener(
+  "click",
+  special
 );
 
 
-/* START */
+/* =========================
+   ENEMY
+========================= */
 
-updateScreen();
+setInterval(() => {
+
+  if (!gameRunning) return;
+
+  const distance =
+    getDistance();
+
+  if (distance > 20) {
+
+    if (enemyX > playerX) {
+      enemyX -= 0.25;
+    } else {
+      enemyX += 0.25;
+    }
+
+  } else {
+
+    if (Math.random() < 0.02) {
+
+      if (!blocking) {
+
+        playerHP -= 5;
+
+        if (playerHP < 0) {
+          playerHP = 0;
+        }
+
+        updateHealth();
+
+        showMessage("ENEMY HIT!");
+      }
+    }
+  }
+
+  updatePositions();
+
+}, 40);
+
+
+/* =========================
+   INITIALIZE
+========================= */
+
+updatePositions();
+updateHealth();
