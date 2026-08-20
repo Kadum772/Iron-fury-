@@ -314,10 +314,14 @@ function kick() {
 
     enemyHP -= 15;
 
-    if (enemyHP < 0) {
-      enemyHP = 0;
-    }
+if (enemyHP < 0) {
+  enemyHP = 0;
+}
 
+if (enemyHP === 0) {
+  gameRunning = false;
+  showMessage("YOU WIN!");
+}
     updateHealth();
 
     showMessage("KICK!");
@@ -437,10 +441,15 @@ function special() {
   if (getDistance() < 20) {
 
     enemyHP -= 25;
+if (enemyHP < 0) {
+  enemyHP = 0;
+}
 
-    if (enemyHP < 0) {
-      enemyHP = 0;
-    }
+if (enemyHP === 0) {
+  gameRunning = false;
+  showMessage("YOU WIN!");
+}
+
 
     updateHealth();
 
