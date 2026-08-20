@@ -168,25 +168,22 @@ joystick.addEventListener(
 );
 
 
+
 /* MOVEMENT */
 
-setInterval(function() {
+setInterval(function () {
 
   if (!gameRunning) return;
 
-  if (joystickX < -0.2) {
+  const speed = 1.5;
 
-    playerX -=
-      1.5 * Math.abs(joystickX);
-
+  if (joystickX < -0.15) {
+    playerX -= speed;
     facingRight = false;
   }
 
-  if (joystickX > 0.2) {
-
-    playerX +=
-      1.5 * joystickX;
-
+  if (joystickX > 0.15) {
+    playerX += speed;
     facingRight = true;
   }
 
@@ -200,7 +197,15 @@ setInterval(function() {
     playerX = 92;
   }
 
-  updateScreen();
+  /* APPLY POSITION */
+
+  player.style.left = playerX + "%";
+
+  if (facingRight) {
+    player.style.transform = "scaleX(1)";
+  } else {
+    player.style.transform = "scaleX(-1)";
+  }
 
 }, 30);
 
