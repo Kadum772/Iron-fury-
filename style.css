@@ -341,11 +341,10 @@ body {
 }
 
 /* JOYSTICK */
-
 #joystick {
-  position: absolute;
+  position: fixed;
   left: 18px;
-  bottom: 35px;
+  bottom: 120px;
 
   width: 105px;
   height: 105px;
@@ -353,69 +352,33 @@ body {
   border: 3px solid #7d8791;
   border-radius: 50%;
 
-  background: rgba(20,25,30,0.8);
+  background: rgba(20, 25, 30, 0.85);
 
   box-shadow:
-    0 0 15px rgba(0,0,0,0.8),
-    inset 0 0 15px rgba(255,255,255,0.08);
+    0 0 15px rgba(0, 0, 0, 0.8),
+    inset 0 0 15px rgba(255, 255, 255, 0.08);
 
-  pointer-events: auto;
+  z-index: 120;
 }
 
-#joystick-knob {
-  position: absolute;
 
-  left: 50%;
-  top: 50%;
-
-  width: 50px;
-  height: 50px;
-
-  transform: translate(-50%, -50%);
-
-  border-radius: 50%;
-  border: 3px solid #aaa;
-
-  background: #30363c;
-}
 
 /* BUTTONS */
 #buttons {
-  position: absolute;
-  right: 15px;
-  top: -45px;
-  width: 205px;
-  display: grid;
-  grid-template-columns: repeat(3, 60px);
+  position: fixed;
+  right: 18px;
+  bottom: 120px;
+
+  width: 220px;
+
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 10px;
+
+  z-index: 120;
 }
-
-
-#buttons button {
-  width: 60px;
-  height: 60px;
-
-  border-radius: 50%;
-  border: 2px solid #777;
-
-  background:
-    radial-gradient(circle at 35% 30%, #555e68, #171b20);
-
-  color: white;
-  font-size: 21px;
-
-  box-shadow: 0 5px 10px rgba(0,0,0,0.7);
-}
-
-#buttons button:active {
-  transform: scale(0.88);
-}
-
-#special {
-  background:
-    radial-gradient(circle, #a239d2, #46105d) !important;
-}
-
+  
 /* SMALL PHONES */
 
 @media (max-width: 500px) {
