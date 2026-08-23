@@ -330,7 +330,6 @@ body {
 }
 
 /* CONTROLS */
-
 #controls {
   position: absolute;
   left: 0;
@@ -367,7 +366,7 @@ body {
 #buttons {
   position: fixed;
   right: 18px;
-  bottom: 120px;
+  bottom: 20px;
 
   width: 220px;
 
@@ -399,3 +398,4 @@ body {
     bottom: 30px;
   }
   }
+
