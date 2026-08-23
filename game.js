@@ -1,193 +1,263 @@
 const player = document.getElementById("player");
 const enemy = document.getElementById("enemy");
 
-const playerHP = document.getElementById("playerHP");
-const enemyHP = document.getElementById("enemyHP");
+const playerHealth = document.getElementById("player-health");
+const enemyHealth = document.getElementById("enemy-health");
 
-const playerEnergy = document.getElementById("playerEnergy");
-const enemyEnergy = document.getElementById("enemyEnergy");
+const playerEnergy = document.getElementById("player-energy");
+const enemyEnergy = document.getElementById("enemy-energy");
 
-const timer = document.getElementById("timer");
+const timerElement = document.getElementById("timer");
 const announcement = document.getElementById("announcement");
 
 const joystick = document.getElementById("joystick");
-const stick = document.getElementById("stick");
+const joystickKnob = document.getElementById("joystick-knob");
 
-const jumpBtn = document.getElementById("jump");
-const dashBtn = document.getElementById("dash");
-const attackBtn = document.getElementById("attack");
-const kickBtn = document.getElementById("kick");
-const blockBtn = document.getElementById("block");
-const specialBtn = document.getElementById("special");
+const jumpButton = document.getElementById("jump");
+const dashButton = document.getElementById("dash");
+const specialButton = document.getElementById("special");
+const punchButton = document.getElementById("punch");
+const kickButton = document.getElementById("kick");
+const blockButton = document.getElementById("block");
 
-let p = {
-  x:25,
-  y:0,
-  hp:100,
-  energy:30,
-  vy:0,
-  attacking:false,
-  blocking:false,
-  cooldown:false
+const state = {
+  running:true,
+  time:60,
+
+  player:{
+    x:23,
+    y:0,
+    hp:100,
+    energy:25,
+    velocityY:0,
+    attacking:false,
+    blocking:false,
+    cooldown:false
+  },
+
+  enemy:{
+    x:68,
+    y:0,
+    hp:100,
+    energy:25,
+    velocityY:0,
+    attacking:false,
+    blocking:false,
+    cooldown:false
+  }
 };
 
-let e = {
-  x:70,
-  y:0,
-  hp:100,
-  energy:30,
-  vy:0,
-  attacking:false,
-  blocking:false,
-  cooldown:false
-};
+let stickX=0;
+let stickY=0;
+let dragging=false;
+let aiClock=0;
+let previousTime=performance.now();
 
-let joystickX = 0;
-let joystickY = 0;
-let dragging = false;
+/* =========================
+   UTILITIES
+========================= */
 
-let time = 60;
-let running = true;
-let lastTime = performance.now();
-let aiTimer = 0;
-
-/* ================= HELPERS ================= */
-
-function clamp(v,min,max){
-  return Math.max(min,Math.min(max,v));
+function clamp(value,min,max){
+  return Math.max(min,Math.min(max,value));
 }
 
-function distance(){
-  return Math.abs(p.x-e.x);
+function getDistance(){
+  return Math.abs(
+    state.player.x-state.enemy.x
+  );
 }
+
+function setAnnouncement(text,time=0){
+
+  announcement.textContent=text;
+
+  if(time){
+
+    setTimeout(()=>{
+
+      if(state.running)
+        announcement.textContent="";
+
+    },time);
+
+  }
+}
+
+/* =========================
+   RENDER
+========================= */
 
 function render(){
 
-  player.style.left = p.x + "%";
-  enemy.style.left = e.x + "%";
+  const p=state.player;
+  const e=state.enemy;
 
-  player.style.bottom =
+  player.style.left=p.x+"%";
+  enemy.style.left=e.x+"%";
+
+  player.style.bottom=
     `calc(25% + ${p.y}px)`;
 
-  enemy.style.bottom =
+  enemy.style.bottom=
     `calc(25% + ${e.y}px)`;
 
-  playerHP.style.width =
-    p.hp + "%";
+  playerHealth.style.width=
+    clamp(p.hp,0,100)+"%";
 
-  enemyHP.style.width =
-    e.hp + "%";
+  enemyHealth.style.width=
+    clamp(e.hp,0,100)+"%";
 
-  playerEnergy.style.width =
-    p.energy + "%";
+  playerEnergy.style.width=
+    clamp(p.energy,0,100)+"%";
 
-  enemyEnergy.style.width =
-    e.energy + "%";
+  enemyEnergy.style.width=
+    clamp(e.energy,0,100)+"%";
 
-  if(p.x <= e.x){
-    player.style.transform = "scaleX(1)";
-    enemy.style.transform = "scaleX(-1)";
+  if(p.x<e.x){
+
+    player.style.transform="scaleX(1)";
+    enemy.style.transform="scaleX(-1)";
+
   }else{
-    player.style.transform = "scaleX(-1)";
-    enemy.style.transform = "scaleX(1)";
+
+    player.style.transform="scaleX(-1)";
+    enemy.style.transform="scaleX(1)";
   }
 }
 
-/* ================= JOYSTICK ================= */
+/* =========================
+   JOYSTICK
+========================= */
 
-function resetStick(){
+function resetJoystick(){
+
   dragging=false;
-  joystickX=0;
-  joystickY=0;
 
-  stick.style.left="50%";
-  stick.style.top="50%";
+  stickX=0;
+  stickY=0;
+
+  joystickKnob.style.left="50%";
+  joystickKnob.style.top="50%";
 }
 
-function moveStick(x,y){
+function updateJoystick(x,y){
 
-  const r =
+  const rect=
     joystick.getBoundingClientRect();
 
-  const cx =
-    r.left+r.width/2;
+  const centerX=
+    rect.left+rect.width/2;
 
-  const cy =
-    r.top+r.height/2;
+  const centerY=
+    rect.top+rect.height/2;
 
-  let dx=x-cx;
-  let dy=y-cy;
+  let dx=x-centerX;
+  let dy=y-centerY;
 
-  const max=r.width/2-27;
+  const maximum=
+    rect.width/2-27;
 
-  const d=Math.hypot(dx,dy);
+  const distance=
+    Math.hypot(dx,dy);
 
-  if(d>max){
-    dx=dx/d*max;
-    dy=dy/d*max;
+  if(distance>maximum){
+
+    dx=
+      dx/distance*maximum;
+
+    dy=
+      dy/distance*maximum;
   }
 
-  joystickX=dx/max;
-  joystickY=dy/max;
+  stickX=dx/maximum;
+  stickY=dy/maximum;
 
-  stick.style.left =
+  joystickKnob.style.left=
     `calc(50% + ${dx}px)`;
 
-  stick.style.top =
+  joystickKnob.style.top=
     `calc(50% + ${dy}px)`;
 }
 
 joystick.addEventListener(
   "pointerdown",
-  ev=>{
+  event=>{
+
     dragging=true;
-    joystick.setPointerCapture(ev.pointerId);
-    moveStick(ev.clientX,ev.clientY);
+
+    joystick.setPointerCapture(
+      event.pointerId
+    );
+
+    updateJoystick(
+      event.clientX,
+      event.clientY
+    );
   }
 );
 
 joystick.addEventListener(
   "pointermove",
-  ev=>{
-    if(dragging)
-      moveStick(ev.clientX,ev.clientY);
+  event=>{
+
+    if(!dragging)return;
+
+    updateJoystick(
+      event.clientX,
+      event.clientY
+    );
   }
 );
 
 joystick.addEventListener(
   "pointerup",
-  resetStick
+  resetJoystick
 );
 
 joystick.addEventListener(
   "pointercancel",
-  resetStick
+  resetJoystick
 );
 
-/* ================= JUMP ================= */
+/* =========================
+   JUMP
+========================= */
 
-jumpBtn.addEventListener(
+jumpButton.addEventListener(
   "pointerdown",
   ()=>{
-    if(!running || p.y>2)return;
 
-    p.vy=.65;
+    const p=state.player;
+
+    if(!state.running)return;
+
+    if(p.y>2)return;
+
+    p.velocityY=.72;
   }
 );
 
-/* ================= DASH ================= */
+/* =========================
+   DASH
+========================= */
 
-dashBtn.addEventListener(
+dashButton.addEventListener(
   "pointerdown",
   ()=>{
-    if(!running || p.cooldown)return;
+
+    const p=state.player;
+
+    if(!state.running)return;
+    if(p.cooldown)return;
 
     p.cooldown=true;
 
     player.classList.add("dashing");
 
-    p.x +=
-      p.x<e.x ? 9 : -9;
+    p.x+=
+      p.x<state.enemy.x
+      ? 10
+      : -10;
 
     p.x=clamp(p.x,5,90);
 
@@ -197,16 +267,23 @@ dashBtn.addEventListener(
 
     setTimeout(()=>{
       p.cooldown=false;
-    },600);
+    },550);
   }
 );
 
-/* ================= PUNCH ================= */
+/* =========================
+   PUNCH
+========================= */
 
-attackBtn.addEventListener(
+punchButton.addEventListener(
   "pointerdown",
   ()=>{
-    if(!running || p.attacking || p.cooldown)return;
+
+    const p=state.player;
+
+    if(!state.running)return;
+    if(p.attacking)return;
+    if(p.cooldown)return;
 
     p.attacking=true;
 
@@ -214,26 +291,51 @@ attackBtn.addEventListener(
 
     setTimeout(()=>{
 
-      if(distance()<14){
-        e.hp-=10;
-        e.energy=clamp(e.energy+8,0,100);
+      if(
+        getDistance()<14 &&
+        state.enemy.hp>0
+      ){
+
+        state.enemy.hp-=10;
+
+        state.enemy.energy=
+          clamp(
+            state.enemy.energy+7,
+            0,
+            100
+          );
+
+        enemy.classList.add("hit");
+
+        setTimeout(()=>{
+          enemy.classList.remove("hit");
+        },170);
       }
 
     },100);
 
     setTimeout(()=>{
+
       player.classList.remove("punching");
+
       p.attacking=false;
-    },240);
+
+    },250);
   }
 );
 
-/* ================= KICK ================= */
+/* =========================
+   KICK
+========================= */
 
-kickBtn.addEventListener(
+kickButton.addEventListener(
   "pointerdown",
   ()=>{
-    if(!running || p.attacking || p.cooldown)return;
+
+    const p=state.player;
+
+    if(!state.running)return;
+    if(p.attacking)return;
 
     p.attacking=true;
 
@@ -241,96 +343,212 @@ kickBtn.addEventListener(
 
     setTimeout(()=>{
 
-      if(distance()<17){
-        e.hp-=14;
-        e.energy=clamp(e.energy+10,0,100);
+      if(
+        getDistance()<17 &&
+        state.enemy.hp>0
+      ){
+
+        state.enemy.hp-=14;
+
+        enemy.classList.add("hit");
+
+        setTimeout(()=>{
+          enemy.classList.remove("hit");
+        },170);
       }
 
     },120);
 
     setTimeout(()=>{
+
       player.classList.remove("kicking");
+
       p.attacking=false;
+
     },300);
   }
 );
 
-/* ================= BLOCK ================= */
+/* =========================
+   BLOCK
+========================= */
 
-blockBtn.addEventListener(
+function startBlock(){
+
+  if(!state.running)return;
+
+  state.player.blocking=true;
+
+  player.classList.add("blocking");
+}
+
+function stopBlock(){
+
+  state.player.blocking=false;
+
+  player.classList.remove("blocking");
+}
+
+blockButton.addEventListener(
   "pointerdown",
-  ()=>{
-    if(!running)return;
-
-    p.blocking=true;
-    player.classList.add("blocking");
-  }
+  startBlock
 );
 
-blockBtn.addEventListener(
+blockButton.addEventListener(
   "pointerup",
-  ()=>{
-    p.blocking=false;
-    player.classList.remove("blocking");
-  }
+  stopBlock
 );
 
-blockBtn.addEventListener(
+blockButton.addEventListener(
   "pointercancel",
-  ()=>{
-    p.blocking=false;
-    player.classList.remove("blocking");
-  }
+  stopBlock
 );
 
-/* ================= SPECIAL ================= */
+blockButton.addEventListener(
+  "pointerleave",
+  stopBlock
+);
 
-specialBtn.addEventListener(
+/* =========================
+   SPECIAL
+========================= */
+
+specialButton.addEventListener(
   "pointerdown",
   ()=>{
-    if(!running)return;
+
+    const p=state.player;
+
+    if(!state.running)return;
     if(p.energy<100)return;
     if(p.attacking)return;
 
     p.energy=0;
+
     p.attacking=true;
 
-    announcement.textContent="FURY";
+    setAnnouncement("FURY",600);
 
     player.classList.add("punching");
 
     setTimeout(()=>{
 
-      if(distance()<24){
-        e.hp-=30;
+      if(
+        getDistance()<25 &&
+        state.enemy.hp>0
+      ){
+
+        state.enemy.hp-=30;
+
+        enemy.classList.add("hit");
+
+        setTimeout(()=>{
+          enemy.classList.remove("hit");
+        },180);
       }
 
     },150);
 
     setTimeout(()=>{
+
       player.classList.remove("punching");
+
       p.attacking=false;
 
-      if(running)
-        announcement.textContent="";
-    },550);
+    },600);
   }
 );
 
-/* ================= ENEMY AI ================= */
+/* =========================
+   PLAYER MOVEMENT
+========================= */
 
-function enemyAI(dt){
+function updatePlayer(dt){
 
-  aiTimer-=dt;
+  const p=state.player;
 
-  const d=distance();
+  if(
+    Math.abs(stickX)>.08 &&
+    !p.attacking &&
+    state.running
+  ){
 
-  if(d>14 && !e.attacking){
+    p.x+=
+      stickX*.055*dt;
 
-    e.x +=
-      (p.x>e.x ? 1 : -1)
-      * .018
-      * dt;
+    p.x=clamp(p.x,5,90);
+
+    player.classList.add("walking");
+
+  }else{
+
+    player.classList.remove("walking");
+  }
+}
+
+/* =========================
+   PHYSICS
+========================= */
+
+function updatePhysics(dt){
+
+  const p=state.player;
+  const e=state.enemy;
+
+  p.velocityY-=.001*dt;
+  p.y+=p.velocityY*dt;
+
+  if(p.y<0){
+    p.y=0;
+    p.velocityY=0;
+  }
+
+  e.velocityY-=.001*dt;
+  e.y+=e.velocityY*dt;
+
+  if(e.y<0){
+    e.y=0;
+    e.velocityY=0;
+  }
+
+  p.energy=
+    clamp(
+      p.energy+.006*dt,
+      0,
+      100
+    );
+
+  e.energy=
+    clamp(
+      e.energy+.004*dt,
+      0,
+      100
+    );
+}
+
+/* =========================
+   ENEMY AI
+========================= */
+
+function updateEnemy(dt){
+
+  const e=state.enemy;
+  const p=state.player;
+
+  aiClock-=dt;
+
+  const distance=
+    getDistance();
+
+  if(
+    distance>15 &&
+    !e.attacking
+  ){
+
+    e.x+=
+      (p.x>e.x?1:-1)
+      *.018
+      *dt;
 
     e.x=clamp(e.x,5,90);
 
@@ -341,27 +559,32 @@ function enemyAI(dt){
     enemy.classList.remove("walking");
   }
 
-  if(aiTimer<=0){
+  if(aiClock<=0){
 
-    aiTimer=
-      450+
-      Math.random()*700;
+    aiClock=
+      350+
+      Math.random()*750;
 
-    if(d<16){
+    if(distance<17){
 
-      const r=Math.random();
+      const choice=
+        Math.random();
 
-      if(r<.65){
-        enemyAttack();
-      }
-      else if(r<.85){
+      if(choice<.7){
+
+        enemyPunch();
+
+      }else{
+
         enemyBlock();
       }
     }
   }
 }
 
-function enemyAttack(){
+function enemyPunch(){
+
+  const e=state.enemy;
 
   if(e.cooldown)return;
 
@@ -372,184 +595,192 @@ function enemyAttack(){
 
   setTimeout(()=>{
 
-    if(distance()<15){
+    if(
+      getDistance()<16 &&
+      state.player.hp>0
+    ){
 
-      let damage=8;
+      let damage=9;
 
-      if(p.blocking)
+      if(state.player.blocking)
         damage=2;
 
-      p.hp-=damage;
+      state.player.hp-=damage;
 
       e.energy=
-        clamp(e.energy+10,0,100);
+        clamp(
+          e.energy+8,
+          0,
+          100
+        );
     }
 
   },110);
 
   setTimeout(()=>{
+
     enemy.classList.remove("punching");
+
     e.attacking=false;
-  },260);
+
+  },270);
 
   setTimeout(()=>{
     e.cooldown=false;
-  },600);
+  },650);
 }
 
 function enemyBlock(){
+
+  const e=state.enemy;
+
+  if(e.attacking)return;
 
   e.blocking=true;
 
   enemy.classList.add("blocking");
 
   setTimeout(()=>{
+
     e.blocking=false;
+
     enemy.classList.remove("blocking");
+
   },500);
 }
 
-/* ================= PHYSICS ================= */
+/* =========================
+   ROUND END
+========================= */
 
-function physics(dt){
+function finishRound(message){
 
-  p.vy-=.0009*dt;
-  p.y+=p.vy*dt;
+  if(!state.running)return;
 
-  if(p.y<0){
-    p.y=0;
-    p.vy=0;
-  }
+  state.running=false;
 
-  e.vy-=.0009*dt;
-  e.y+=e.vy*dt;
+  player.classList.remove(
+    "walking",
+    "punching",
+    "kicking",
+    "blocking",
+    "dashing"
+  );
 
-  if(e.y<0){
-    e.y=0;
-    e.vy=0;
-  }
+  enemy.classList.remove(
+    "walking",
+    "punching",
+    "blocking"
+  );
 
-  if(
-    Math.abs(joystickX)>.08 &&
-    !p.attacking &&
-    running
-  ){
+  setAnnouncement(message);
 
-    p.x +=
-      joystickX*.055*dt;
-
-    p.x=clamp(p.x,5,90);
-
-    player.classList.add("walking");
-
-  }else{
-
-    player.classList.remove("walking");
-  }
-
-  p.energy=
-    clamp(p.energy+.004*dt,0,100);
-
-  e.energy=
-    clamp(e.energy+.003*dt,0,100);
+  setTimeout(resetRound,2200);
 }
 
-/* ================= ROUND ================= */
+function resetRound(){
 
-function finish(text){
+  state.player.x=23;
+  state.player.y=0;
+  state.player.hp=100;
+  state.player.energy=25;
+  state.player.velocityY=0;
+  state.player.attacking=false;
+  state.player.blocking=false;
+  state.player.cooldown=false;
 
-  if(!running)return;
+  state.enemy.x=68;
+  state.enemy.y=0;
+  state.enemy.hp=100;
+  state.enemy.energy=25;
+  state.enemy.velocityY=0;
+  state.enemy.attacking=false;
+  state.enemy.blocking=false;
+  state.enemy.cooldown=false;
 
-  running=false;
-
-  announcement.textContent=text;
-
-  setTimeout(newRound,2200);
-}
-
-function newRound(){
-
-  p.x=25;
-  e.x=70;
-
-  p.y=0;
-  e.y=0;
-
-  p.vy=0;
-  e.vy=0;
-
-  p.hp=100;
-  e.hp=100;
-
-  p.energy=30;
-  e.energy=30;
-
-  p.attacking=false;
-  e.attacking=false;
-
-  p.blocking=false;
-  e.blocking=false;
-
-  time=60;
+  state.time=60;
+  state.running=true;
 
   announcement.textContent="";
-
-  running=true;
 
   render();
 }
 
-/* ================= GAME LOOP ================= */
+/* =========================
+   GAME LOOP
+========================= */
 
-function loop(now){
+function gameLoop(now){
 
-  const dt =
-    Math.min(now-lastTime,40);
+  const dt=
+    Math.min(
+      now-previousTime,
+      40
+    );
 
-  lastTime=now;
+  previousTime=now;
 
-  if(running){
+  if(state.running){
 
-    physics(dt);
-    enemyAI(dt);
+    updatePlayer(dt);
+    updatePhysics(dt);
+    updateEnemy(dt);
 
-    if(p.hp<=0)
-      finish("RIVAL WINS");
+    if(state.player.hp<=0){
 
-    else if(e.hp<=0)
-      finish("FURY WINS");
+      finishRound("RIVAL WINS");
 
-    else if(time<=0){
+    }else if(state.enemy.hp<=0){
 
-      if(p.hp>e.hp)
-        finish("FURY WINS");
-      else if(e.hp>p.hp)
-        finish("RIVAL WINS");
-      else
-        finish("DRAW");
+      finishRound("FURY WINS");
+
+    }else if(state.time<=0){
+
+      if(
+        state.player.hp>
+        state.enemy.hp
+      ){
+
+        finishRound("FURY WINS");
+
+      }else if(
+        state.enemy.hp>
+        state.player.hp
+      ){
+
+        finishRound("RIVAL WINS");
+
+      }else{
+
+        finishRound("DRAW");
+      }
     }
   }
 
   render();
 
-  requestAnimationFrame(loop);
+  requestAnimationFrame(gameLoop);
 }
 
-/* ================= TIMER ================= */
+/* =========================
+   TIMER
+========================= */
 
 setInterval(()=>{
 
-  if(!running)return;
+  if(!state.running)return;
 
-  time--;
+  state.time--;
 
-  timer.textContent =
-    Math.max(0,time);
+  timerElement.textContent=
+    Math.max(0,state.time);
 
 },1000);
 
-/* ================= START ================= */
+/* =========================
+   START
+========================= */
 
 render();
 
-requestAnimationFrame(loop);
+requestAnimationFrame(gameLoop);
