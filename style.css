@@ -2,8 +2,10 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+
   user-select: none;
   -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
   touch-action: none;
 }
 
@@ -11,391 +13,713 @@ html,
 body {
   width: 100%;
   height: 100%;
+
   overflow: hidden;
+
   background: #050505;
+
   font-family: Arial, sans-serif;
 }
 
-#game {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  background:
-    radial-gradient(circle at 50% 20%, #39495a, #101820 70%);
+body {
+  position: fixed;
 }
 
-/* HUD */
+/* ================= GAME ================= */
+
+#game {
+  position: relative;
+
+  width: 100vw;
+  height: 100vh;
+
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      circle at 50% 15%,
+      #566d7d 0%,
+      #293b48 35%,
+      #101820 70%,
+      #05080b 100%
+    );
+}
+
+/* ================= HUD ================= */
 
 #hud {
   position: absolute;
-  top: 12px;
+
+  top: 10px;
   left: 10px;
   right: 10px;
-  height: 55px;
-  z-index: 50;
+
+  height: 60px;
+
+  z-index: 100;
 }
 
-.fighter-name {
+.name {
   position: absolute;
-  left: 0;
+
   top: 0;
+
   color: white;
+
   font-size: 13px;
-  font-weight: bold;
+  font-weight: 900;
+
+  letter-spacing: 1px;
+
+  text-shadow: 0 2px 5px black;
+}
+
+.player-name {
+  left: 0;
 }
 
 .enemy-name {
-  left: auto;
   right: 0;
 }
 
-.health {
+.health-bar {
   position: absolute;
-  left: 0;
-  top: 20px;
+
+  top: 21px;
+
   width: 40%;
   height: 18px;
+
+  overflow: hidden;
+
   border: 2px solid white;
-  background: #111;
+
+  background: #090909;
+
+  box-shadow:
+    0 3px 8px rgba(0,0,0,.7);
 }
 
-.health div {
-  width: 100%;
-  height: 100%;
-  background: #20d84a;
-  transition: width 0.2s;
+.player-bar {
+  left: 0;
 }
 
-.enemy-health {
-  left: auto;
+.enemy-bar {
   right: 0;
 }
 
-.enemy-health div {
-  background: #e52c2c;
+.health-bar div {
+  width: 100%;
+  height: 100%;
+
+  transition: width .15s linear;
+}
+
+#player-health {
+  background:
+    linear-gradient(
+      90deg,
+      #087d2a,
+      #26ef55
+    );
+}
+
+#enemy-health {
+  background:
+    linear-gradient(
+      90deg,
+      #9d1119,
+      #f13b3b
+    );
 }
 
 #timer {
   position: absolute;
+
   left: 50%;
-  top: 0;
+  top: -4px;
+
   transform: translateX(-50%);
+
   color: white;
-  font-size: 25px;
-  font-weight: bold;
+
+  font-size: 28px;
+  font-weight: 900;
+
+  text-shadow:
+    0 3px 6px black;
 }
 
-/* ARENA */
+/* ================= ARENA ================= */
 
 #arena {
   position: absolute;
+
   left: 0;
   right: 0;
+
   top: 70px;
   bottom: 175px;
+
   overflow: hidden;
 
   background:
+    radial-gradient(
+      ellipse at 50% 25%,
+      rgba(125,155,175,.25),
+      transparent 60%
+    ),
     linear-gradient(
       180deg,
-      #263646 0%,
-      #131c25 60%,
-      #080b0f 100%
+      #304654,
+      #17232d 65%,
+      #0b1116
     );
 }
 
-/* FLOOR */
+/* arena lights */
+
+#arena::before {
+  content: "";
+
+  position: absolute;
+
+  left: 10%;
+  right: 10%;
+  top: 0;
+
+  height: 70%;
+
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(255,255,255,.12),
+      transparent 70%
+    );
+
+  pointer-events: none;
+}
+
+/* floor */
 
 #arena::after {
   content: "";
+
   position: absolute;
+
   left: 0;
   right: 0;
   bottom: 0;
-  height: 28%;
+
+  height: 29%;
 
   background:
     linear-gradient(
-      rgba(255,255,255,0.06) 1px,
+      rgba(255,255,255,.055) 1px,
       transparent 1px
     ),
     linear-gradient(
       90deg,
-      rgba(255,255,255,0.06) 1px,
+      rgba(255,255,255,.055) 1px,
       transparent 1px
     ),
-    #171c22;
+    linear-gradient(
+      #252d33,
+      #0d1115
+    );
 
-  background-size: 40px 25px;
-  border-top: 3px solid #68717a;
+  background-size:
+    40px 25px,
+    40px 25px,
+    100% 100%;
+
+  border-top: 3px solid #68737c;
+
+  box-shadow:
+    inset 0 15px 30px rgba(0,0,0,.45);
 }
 
-/* FIGHTER */
+/* ================= FIGHTER ================= */
 
 .fighter {
   position: absolute;
-  width: 70px;
-  height: 150px;
+
+  width: 82px;
+  height: 165px;
+
   bottom: 27%;
+
   z-index: 20;
+
+  filter:
+    drop-shadow(
+      0 8px 6px rgba(0,0,0,.7)
+    );
 }
 
-/* HEAD */
+/* ================= HEAD ================= */
 
 .head {
   position: absolute;
-  top: 0;
-  left: 20px;
 
-  width: 34px;
-  height: 34px;
+  top: 0;
+  left: 23px;
+
+  width: 37px;
+  height: 37px;
 
   border-radius: 50%;
-  background: #d09570;
-  border: 3px solid #171717;
+
+  background:
+    linear-gradient(
+      145deg,
+      #f1b58c,
+      #a56044
+    );
+
+  border: 3px solid #111;
+
+  box-shadow:
+    inset -5px -5px 7px rgba(0,0,0,.25);
 }
 
-/* BODY */
+/* ================= BODY ================= */
 
 .body {
   position: absolute;
-  top: 34px;
-  left: 18px;
 
-  width: 38px;
-  height: 55px;
+  top: 36px;
+  left: 19px;
 
-  border-radius: 10px;
-  background: #1677b7;
-  border: 3px solid #151515;
+  width: 44px;
+  height: 60px;
+
+  border-radius: 11px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #31a9e5,
+      #07547e
+    );
+
+  border: 3px solid #111;
+
+  box-shadow:
+    inset -7px -7px 10px rgba(0,0,0,.3);
 }
 
 .enemy .body {
-  background: #b52323;
+  background:
+    linear-gradient(
+      145deg,
+      #e74343,
+      #72151a
+    );
 }
 
-/* ARMS */
+/* ================= ARMS ================= */
 
 .arm {
   position: absolute;
-  top: 38px;
 
-  width: 13px;
-  height: 52px;
+  top: 39px;
+
+  width: 14px;
+  height: 57px;
 
   border-radius: 10px;
-  background: #d09570;
-  border: 2px solid #171717;
 
-  transform-origin: top center;
-  transition: transform 0.12s;
-}
+  background:
+    linear-gradient(
+      90deg,
+      #edaa7b,
+      #99563f
+    );
 
-.arm-left {
-  left: 6px;
-}
-
-.arm-right {
-  right: 6px;
-}
-
-/* LEGS */
-
-.leg {
-  position: absolute;
-  top: 87px;
-
-  width: 15px;
-  height: 58px;
-
-  border-radius: 9px;
-  background: #20242a;
   border: 2px solid #111;
 
   transform-origin: top center;
-  transition: transform 0.12s;
+
+  transition:
+    transform .12s ease;
 }
 
-.leg-left {
-  left: 19px;
+.left-arm {
+  left: 5px;
 }
 
-.leg-right {
-  right: 19px;
+.right-arm {
+  right: 5px;
 }
 
-/* ANIMATIONS */
+/* ================= LEGS ================= */
 
-.fighter.walking .leg-left {
-  animation: walkLeft 0.22s infinite alternate;
+.leg {
+  position: absolute;
+
+  top: 92px;
+
+  width: 17px;
+  height: 66px;
+
+  border-radius: 10px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #343a42,
+      #101418
+    );
+
+  border: 2px solid #080808;
+
+  transform-origin: top center;
+
+  transition:
+    transform .12s ease;
 }
 
-.fighter.walking .leg-right {
-  animation: walkRight 0.22s infinite alternate;
+.left-leg {
+  left: 20px;
 }
 
-.fighter.walking .arm-left {
-  animation: armLeft 0.22s infinite alternate;
+.right-leg {
+  right: 20px;
 }
 
-.fighter.walking .arm-right {
-  animation: armRight 0.22s infinite alternate;
+/* ================= WALK ================= */
+
+.fighter.walking .left-leg {
+  animation:
+    walk-left .2s infinite alternate;
 }
 
-@keyframes walkLeft {
+.fighter.walking .right-leg {
+  animation:
+    walk-right .2s infinite alternate;
+}
+
+.fighter.walking .left-arm {
+  animation:
+    arm-left .2s infinite alternate;
+}
+
+.fighter.walking .right-arm {
+  animation:
+    arm-right .2s infinite alternate;
+}
+
+@keyframes walk-left {
   from {
-    transform: rotate(18deg);
+    transform: rotate(20deg);
   }
 
   to {
-    transform: rotate(-18deg);
+    transform: rotate(-20deg);
   }
 }
 
-@keyframes walkRight {
+@keyframes walk-right {
   from {
-    transform: rotate(-18deg);
+    transform: rotate(-20deg);
   }
 
   to {
-    transform: rotate(18deg);
+    transform: rotate(20deg);
   }
 }
 
-@keyframes armLeft {
+@keyframes arm-left {
   from {
-    transform: rotate(-12deg);
+    transform: rotate(-15deg);
   }
 
   to {
-    transform: rotate(12deg);
+    transform: rotate(15deg);
   }
 }
 
-@keyframes armRight {
+@keyframes arm-right {
   from {
-    transform: rotate(12deg);
+    transform: rotate(15deg);
   }
 
   to {
-    transform: rotate(-12deg);
+    transform: rotate(-15deg);
   }
 }
 
-/* PUNCH */
+/* ================= PUNCH ================= */
 
-.fighter.punching .arm-right {
-  transform: rotate(-80deg) translateY(-5px);
+.fighter.punching .right-arm {
+  transform:
+    rotate(-88deg)
+    translateY(-5px);
 }
 
-/* KICK */
+/* ================= KICK ================= */
 
-.fighter.kicking .leg-right {
-  transform: rotate(65deg);
+.fighter.kicking .right-leg {
+  transform:
+    rotate(70deg);
 }
 
-/* BLOCK */
+/* ================= BLOCK ================= */
 
-.fighter.blocking .arm-left {
-  transform: rotate(-65deg);
+.fighter.blocking .left-arm {
+  transform:
+    rotate(-65deg);
 }
 
-.fighter.blocking .arm-right {
-  transform: rotate(65deg);
+.fighter.blocking .right-arm {
+  transform:
+    rotate(65deg);
 }
 
-/* DASH */
+/* ================= DASH ================= */
 
 .fighter.dashing {
-  filter: blur(1px) drop-shadow(0 0 10px white);
+  filter:
+    blur(1px)
+    drop-shadow(
+      0 0 12px white
+    );
 }
 
-/* MESSAGE */
+/* ================= HIT ================= */
+
+.fighter.hit {
+  animation:
+    hit .18s ease;
+}
+
+@keyframes hit {
+
+  0% {
+    transform: translateX(0);
+  }
+
+  40% {
+    transform:
+      translateX(-8px);
+  }
+
+  100% {
+    transform:
+      translateX(0);
+  }
+}
+
+/* ================= MESSAGE ================= */
 
 #message {
   position: absolute;
+
   left: 0;
   right: 0;
+
   top: 40%;
 
-  text-align: center;
   color: white;
 
-  font-size: 30px;
-  font-weight: bold;
+  text-align: center;
+
+  font-size: 34px;
+  font-weight: 900;
+
+  text-shadow:
+    0 4px 8px black;
+
+  z-index: 200;
 
   pointer-events: none;
-  z-index: 100;
 }
 
-/* CONTROLS */
+/* ================= CONTROLS ================= */
+
 #controls {
   position: absolute;
+
   left: 0;
   right: 0;
   bottom: 0;
+
   height: 175px;
+
   z-index: 100;
 }
 
-/* JOYSTICK */
+/* ================= JOYSTICK ================= */
+
 #joystick {
-  position: fixed;
+  position: absolute;
+
   left: 18px;
-  bottom: 120px;
+  bottom: 22px;
 
-  width: 105px;
-  height: 105px;
+  width: 108px;
+  height: 108px;
 
-  border: 3px solid #7d8791;
   border-radius: 50%;
 
-  background: rgba(20, 25, 30, 0.85);
+  border: 3px solid #7f8a94;
+
+  background:
+    radial-gradient(
+      circle,
+      #414c55,
+      #11161a
+    );
 
   box-shadow:
-    0 0 15px rgba(0, 0, 0, 0.8),
-    inset 0 0 15px rgba(255, 255, 255, 0.08);
+    0 5px 15px rgba(0,0,0,.8),
+    inset 0 0 15px rgba(255,255,255,.08);
 
   z-index: 120;
 }
 
+#joystick-knob {
+  position: absolute;
 
+  left: 50%;
+  top: 50%;
 
-/* BUTTONS */
+  width: 54px;
+  height: 54px;
+
+  transform:
+    translate(-50%,-50%);
+
+  border-radius: 50%;
+
+  border: 3px solid #aaa;
+
+  background:
+    linear-gradient(
+      145deg,
+      #777,
+      #303030
+    );
+
+  box-shadow:
+    inset 0 0 10px rgba(0,0,0,.7),
+    0 3px 8px rgba(0,0,0,.7);
+}
+
+/* ================= BUTTONS ================= */
+
 #buttons {
-  position: fixed;
-  right: 200px;
-  bottom: 20px;
+  position: absolute;
 
-  width: 220px;
+  right: 18px;
+  bottom: 22px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 64px);
+
+  grid-template-rows:
+    repeat(2, 64px);
+
+  gap: 9px;
+
+  z-index: 120;
+}
+
+#buttons button {
+  width: 64px;
+  height: 64px;
+
+  border-radius: 50%;
+
+  border: 2px solid #7e858b;
+
+  color: white;
+
+  font-size: 22px;
+  font-weight: bold;
+
+  background:
+    radial-gradient(
+      circle at 35% 30%,
+      #626970,
+      #20252a
+    );
+
+  box-shadow:
+    0 5px 10px rgba(0,0,0,.7),
+    inset 0 2px 3px rgba(255,255,255,.15);
 
   display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 10px;
+  align-items: center;
+  justify-content: center;
 
-  z-index: 120;
+  transition:
+    transform .08s,
+    filter .08s;
 }
-  
-/* SMALL PHONES */
+
+#buttons button:active {
+  transform: scale(.9);
+  filter: brightness(1.35);
+}
+
+#special {
+  border-color: #c15be8;
+
+  background:
+    radial-gradient(
+      circle at 35% 30%,
+      #a23ac5,
+      #40104d
+    );
+}
+
+#kick {
+  border-color: #d0a63b;
+}
+
+/* ================= MOBILE ================= */
 
 @media (max-width: 500px) {
 
   #buttons {
     right: 10px;
-    top: 30px;
-    gap: 9px;
+    bottom: 18px;
+
+    grid-template-columns:
+      repeat(3, 57px);
+
+    grid-template-rows:
+      repeat(2, 57px);
+
+    gap: 7px;
   }
 
   #buttons button {
-    width: 55px;
-    height: 55px;
+    width: 57px;
+    height: 57px;
+
+    font-size: 19px;
   }
 
   #joystick {
-    left: 14px;
-    bottom: 30px;
-  }
+    left: 12px;
+    bottom: 18px;
+
+    width: 104px;
+    height: 104px;
   }
 
+  #joystick-knob {
+    width: 52px;
+    height: 52px;
+  }
+
+  .fighter {
+    transform-origin:
+      center bottom;
+  }
+}
