@@ -3,77 +3,89 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Stick Fury</title>
+  <title>Iron Fury</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <div id="game">
+<div id="game">
 
-    <div id="hud">
-      <div class="fighter-name">PLAYER</div>
-      <div class="health">
-        <div id="player-health"></div>
-      </div>
+  <!-- HUD -->
+  <div id="hud">
 
-      <div id="timer">60</div>
+    <div class="name player-name">PLAYER</div>
+    <div class="name enemy-name">ENEMY</div>
 
-      <div class="fighter-name enemy-name">ENEMY</div>
-      <div class="health enemy-health">
-        <div id="enemy-health"></div>
-      </div>
+    <div class="health-bar player-bar">
+      <div id="player-health"></div>
     </div>
 
-    <div id="arena">
+    <div class="health-bar enemy-bar">
+      <div id="enemy-health"></div>
+    </div>
 
-      <div id="player" class="fighter player">
-        <div class="head"></div>
-        <div class="body"></div>
-        <div class="arm arm-left"></div>
-        <div class="arm arm-right"></div>
-        <div class="leg leg-left"></div>
-        <div class="leg leg-right"></div>
-      </div>
+    <div id="timer">60</div>
 
-      <div id="enemy" class="fighter enemy">
-        <div class="head"></div>
-        <div class="body"></div>
-        <div class="arm arm-left"></div>
-        <div class="arm arm-right"></div>
-        <div class="leg leg-left"></div>
-        <div class="leg leg-right"></div>
-      </div>
+  </div>
 
-      <div id="message"></div>
+  <!-- ARENA -->
+  <div id="arena">
+
+    <div id="player" class="fighter player">
+
+      <div class="head"></div>
+      <div class="body"></div>
+
+      <div class="arm left-arm"></div>
+      <div class="arm right-arm"></div>
+
+      <div class="leg left-leg"></div>
+      <div class="leg right-leg"></div>
 
     </div>
 
-    <!-- MOBILE CONTROLS -->
+    <div id="enemy" class="fighter enemy">
 
-    <div id="controls">
+      <div class="head"></div>
+      <div class="body"></div>
 
-      <div id="joystick">
-        <div id="joystick-knob"></div>
-      </div>
+      <div class="arm left-arm"></div>
+      <div class="arm right-arm"></div>
 
-      <div id="buttons">
+      <div class="leg left-leg"></div>
+      <div class="leg right-leg"></div>
 
-        <button id="jump">⬆</button>
-        <button id="dash">💨</button>
-        <button id="punch">👊</button>
+    </div>
 
-        <button id="kick">🦵</button>
-        <button id="block">🛡️</button>
-        <button id="special">⚡</button>
+    <div id="message"></div>
 
-      </div>
+  </div>
+
+  <!-- MOBILE CONTROLS -->
+  <div id="controls">
+
+    <div id="joystick">
+      <div id="joystick-knob"></div>
+    </div>
+
+    <div id="buttons">
+
+      <button id="jump">↑</button>
+      <button id="dash">⚡</button>
+      <button id="punch">👊</button>
+
+      <button id="kick">🦵</button>
+      <button id="block">🛡</button>
+      <button id="special">★</button>
 
     </div>
 
   </div>
 
-  <script src="game.js"></script>
+</div>
+
+<script src="game.js"></script>
 
 </body>
 </html>
