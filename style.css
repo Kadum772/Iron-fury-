@@ -365,7 +365,7 @@ body {
 /* BUTTONS */
 #buttons {
   position: fixed;
-  right: 18px;
+  right: 200px;
   bottom: 20px;
 
   width: 220px;
