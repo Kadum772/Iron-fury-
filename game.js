@@ -1,1013 +1,555 @@
-/* =========================================================
-   IRON FURY
-   COMPLETE GAME ENGINE
-   ========================================================= */
-
 const player = document.getElementById("player");
 const enemy = document.getElementById("enemy");
 
-const playerHealthBar =
-  document.getElementById("player-health");
+const playerHP = document.getElementById("playerHP");
+const enemyHP = document.getElementById("enemyHP");
 
-const enemyHealthBar =
-  document.getElementById("enemy-health");
+const playerEnergy = document.getElementById("playerEnergy");
+const enemyEnergy = document.getElementById("enemyEnergy");
 
-const timerElement =
-  document.getElementById("timer");
+const timer = document.getElementById("timer");
+const announcement = document.getElementById("announcement");
 
-const message =
-  document.getElementById("message");
+const joystick = document.getElementById("joystick");
+const stick = document.getElementById("stick");
 
-const joystick =
-  document.getElementById("joystick");
+const jumpBtn = document.getElementById("jump");
+const dashBtn = document.getElementById("dash");
+const attackBtn = document.getElementById("attack");
+const kickBtn = document.getElementById("kick");
+const blockBtn = document.getElementById("block");
+const specialBtn = document.getElementById("special");
 
-const joystickKnob =
-  document.getElementById("joystick-knob");
+let p = {
+  x:25,
+  y:0,
+  hp:100,
+  energy:30,
+  vy:0,
+  attacking:false,
+  blocking:false,
+  cooldown:false
+};
 
-/* ================= BUTTONS ================= */
+let e = {
+  x:70,
+  y:0,
+  hp:100,
+  energy:30,
+  vy:0,
+  attacking:false,
+  blocking:false,
+  cooldown:false
+};
 
-const jumpButton =
-  document.getElementById("jump");
-
-const dashButton =
-  document.getElementById("dash");
-
-const punchButton =
-  document.getElementById("punch");
-
-const kickButton =
-  document.getElementById("kick");
-
-const blockButton =
-  document.getElementById("block");
-
-const specialButton =
-  document.getElementById("special");
-
-/* ================= SETTINGS ================= */
-
-const MAX_HEALTH = 100;
-
-const ARENA_MIN = 5;
-const ARENA_MAX = 90;
-
-const PLAYER_SPEED = 0.055;
-const ENEMY_SPEED = 0.035;
-
-const GRAVITY = 0.0008;
-const JUMP_POWER = 0.55;
-
-/* ================= GAME STATE ================= */
-
-let playerHealth = MAX_HEALTH;
-let enemyHealth = MAX_HEALTH;
-
-let playerX = 24;
-let enemyX = 70;
-
-let playerY = 0;
-let enemyY = 0;
-
-let playerVelocityY = 0;
-let enemyVelocityY = 0;
-
-let playerFacing = 1;
-let enemyFacing = -1;
-
-let gameOver = false;
-
-let playerBlocking = false;
-let enemyBlocking = false;
-
-let playerAttacking = false;
-let enemyAttacking = false;
-
-let playerAttackCooldown = false;
-let enemyAttackCooldown = false;
-
-let dashCooldown = false;
-
-let joystickActive = false;
 let joystickX = 0;
 let joystickY = 0;
+let dragging = false;
 
-let timeLeft = 60;
+let time = 60;
+let running = true;
+let lastTime = performance.now();
+let aiTimer = 0;
 
-let lastFrame = 0;
-let enemyThinkTimer = 0;
-let timerInterval;
+/* ================= HELPERS ================= */
 
-/* =========================================================
-   BASIC HELPERS
-   ========================================================= */
-
-function clamp(value, min, max) {
-  return Math.max(min, Math.min(max, value));
+function clamp(v,min,max){
+  return Math.max(min,Math.min(max,v));
 }
 
-function fighterDistance() {
-  return Math.abs(playerX - enemyX);
+function distance(){
+  return Math.abs(p.x-e.x);
 }
 
-/* =========================================================
-   POSITION
-   ========================================================= */
+function render(){
 
-function updatePositions() {
-
-  player.style.left =
-    playerX + "%";
-
-  enemy.style.left =
-    enemyX + "%";
+  player.style.left = p.x + "%";
+  enemy.style.left = e.x + "%";
 
   player.style.bottom =
-    "calc(27% + " + playerY + "px)";
+    `calc(25% + ${p.y}px)`;
 
   enemy.style.bottom =
-    "calc(27% + " + enemyY + "px)";
-}
+    `calc(25% + ${e.y}px)`;
 
-/* =========================================================
-   FACING
-   ========================================================= */
+  playerHP.style.width =
+    p.hp + "%";
 
-function updateFacing() {
+  enemyHP.style.width =
+    e.hp + "%";
 
-  if (playerX < enemyX) {
-    playerFacing = 1;
-    enemyFacing = -1;
-  } else {
-    playerFacing = -1;
-    enemyFacing = 1;
-  }
+  playerEnergy.style.width =
+    p.energy + "%";
 
-  player.style.transform =
-    `scaleX(${playerFacing})`;
+  enemyEnergy.style.width =
+    e.energy + "%";
 
-  enemy.style.transform =
-    `scaleX(${enemyFacing})`;
-}
-
-/* =========================================================
-   HEALTH
-   ========================================================= */
-
-function updateHealth() {
-
-  playerHealth =
-    clamp(playerHealth, 0, MAX_HEALTH);
-
-  enemyHealth =
-    clamp(enemyHealth, 0, MAX_HEALTH);
-
-  playerHealthBar.style.width =
-    playerHealth + "%";
-
-  enemyHealthBar.style.width =
-    enemyHealth + "%";
-}
-
-/* =========================================================
-   DAMAGE
-   ========================================================= */
-
-function damageEnemy(amount) {
-
-  if (gameOver) return;
-
-  if (enemyBlocking) {
-    amount *= 0.25;
-  }
-
-  enemyHealth -= amount;
-
-  enemy.classList.add("hit");
-
-  setTimeout(() => {
-    enemy.classList.remove("hit");
-  }, 180);
-
-  updateHealth();
-
-  if (enemyHealth <= 0) {
-    finishRound("PLAYER WINS");
+  if(p.x <= e.x){
+    player.style.transform = "scaleX(1)";
+    enemy.style.transform = "scaleX(-1)";
+  }else{
+    player.style.transform = "scaleX(-1)";
+    enemy.style.transform = "scaleX(1)";
   }
 }
 
-function damagePlayer(amount) {
+/* ================= JOYSTICK ================= */
 
-  if (gameOver) return;
+function resetStick(){
+  dragging=false;
+  joystickX=0;
+  joystickY=0;
 
-  if (playerBlocking) {
-    amount *= 0.25;
-  }
-
-  playerHealth -= amount;
-
-  player.classList.add("hit");
-
-  setTimeout(() => {
-    player.classList.remove("hit");
-  }, 180);
-
-  updateHealth();
-
-  if (playerHealth <= 0) {
-    finishRound("ENEMY WINS");
-  }
+  stick.style.left="50%";
+  stick.style.top="50%";
 }
 
-/* =========================================================
-   PLAYER MOVEMENT
-   ========================================================= */
+function moveStick(x,y){
 
-function movePlayer(amount) {
-
-  if (gameOver) return;
-
-  if (playerAttacking) return;
-
-  playerX += amount;
-
-  playerX =
-    clamp(
-      playerX,
-      ARENA_MIN,
-      ARENA_MAX
-    );
-
-  if (Math.abs(amount) > 0.001) {
-    player.classList.add("walking");
-  } else {
-    player.classList.remove("walking");
-  }
-
-  updatePositions();
-  updateFacing();
-}
-
-/* =========================================================
-   JOYSTICK
-   ========================================================= */
-
-function resetJoystick() {
-
-  joystickActive = false;
-
-  joystickX = 0;
-  joystickY = 0;
-
-  joystickKnob.style.transform =
-    "translate(-50%, -50%)";
-
-  player.classList.remove("walking");
-}
-
-function handleJoystick(x, y) {
-
-  const rect =
+  const r =
     joystick.getBoundingClientRect();
 
-  const centerX =
-    rect.left + rect.width / 2;
+  const cx =
+    r.left+r.width/2;
 
-  const centerY =
-    rect.top + rect.height / 2;
+  const cy =
+    r.top+r.height/2;
 
-  let dx = x - centerX;
-  let dy = y - centerY;
+  let dx=x-cx;
+  let dy=y-cy;
 
-  const radius =
-    rect.width / 2 - 25;
+  const max=r.width/2-27;
 
-  const distance =
-    Math.sqrt(
-      dx * dx +
-      dy * dy
-    );
+  const d=Math.hypot(dx,dy);
 
-  if (distance > radius) {
-
-    dx =
-      dx / distance * radius;
-
-    dy =
-      dy / distance * radius;
+  if(d>max){
+    dx=dx/d*max;
+    dy=dy/d*max;
   }
 
-  joystickX =
-    dx / radius;
+  joystickX=dx/max;
+  joystickY=dy/max;
 
-  joystickY =
-    dy / radius;
+  stick.style.left =
+    `calc(50% + ${dx}px)`;
 
-  joystickKnob.style.transform =
-    `translate(
-      calc(-50% + ${dx}px),
-      calc(-50% + ${dy}px)
-    )`;
+  stick.style.top =
+    `calc(50% + ${dy}px)`;
 }
 
 joystick.addEventListener(
   "pointerdown",
-  event => {
-
-    joystickActive = true;
-
-    joystick.setPointerCapture(
-      event.pointerId
-    );
-
-    handleJoystick(
-      event.clientX,
-      event.clientY
-    );
+  ev=>{
+    dragging=true;
+    joystick.setPointerCapture(ev.pointerId);
+    moveStick(ev.clientX,ev.clientY);
   }
 );
 
 joystick.addEventListener(
   "pointermove",
-  event => {
-
-    if (!joystickActive) return;
-
-    handleJoystick(
-      event.clientX,
-      event.clientY
-    );
+  ev=>{
+    if(dragging)
+      moveStick(ev.clientX,ev.clientY);
   }
 );
 
 joystick.addEventListener(
   "pointerup",
-  resetJoystick
+  resetStick
 );
 
 joystick.addEventListener(
   "pointercancel",
-  resetJoystick
+  resetStick
 );
 
-/* =========================================================
-   JUMP
-   ========================================================= */
+/* ================= JUMP ================= */
 
-function jump() {
-
-  if (gameOver) return;
-
-  if (playerY > 2) return;
-
-  playerVelocityY =
-    JUMP_POWER;
-}
-
-jumpButton.addEventListener(
+jumpBtn.addEventListener(
   "pointerdown",
-  jump
+  ()=>{
+    if(!running || p.y>2)return;
+
+    p.vy=.65;
+  }
 );
 
-/* =========================================================
-   DASH
-   ========================================================= */
+/* ================= DASH ================= */
 
-function dash() {
-
-  if (gameOver) return;
-
-  if (dashCooldown) return;
-
-  dashCooldown = true;
-
-  player.classList.add("dashing");
-
-  playerX +=
-    playerFacing * 8;
-
-  playerX =
-    clamp(
-      playerX,
-      ARENA_MIN,
-      ARENA_MAX
-    );
-
-  updatePositions();
-
-  setTimeout(() => {
-
-    player.classList.remove(
-      "dashing"
-    );
-
-  }, 180);
-
-  setTimeout(() => {
-
-    dashCooldown = false;
-
-  }, 650);
-}
-
-dashButton.addEventListener(
+dashBtn.addEventListener(
   "pointerdown",
-  dash
+  ()=>{
+    if(!running || p.cooldown)return;
+
+    p.cooldown=true;
+
+    player.classList.add("dashing");
+
+    p.x +=
+      p.x<e.x ? 9 : -9;
+
+    p.x=clamp(p.x,5,90);
+
+    setTimeout(()=>{
+      player.classList.remove("dashing");
+    },180);
+
+    setTimeout(()=>{
+      p.cooldown=false;
+    },600);
+  }
 );
 
-/* =========================================================
-   PUNCH
-   ========================================================= */
+/* ================= PUNCH ================= */
 
-function punch() {
-
-  if (gameOver) return;
-
-  if (playerAttackCooldown) return;
-
-  playerAttackCooldown = true;
-  playerAttacking = true;
-
-  player.classList.remove(
-    "walking"
-  );
-
-  player.classList.add(
-    "punching"
-  );
-
-  setTimeout(() => {
-
-    if (fighterDistance() < 15) {
-      damageEnemy(10);
-    }
-
-  }, 100);
-
-  setTimeout(() => {
-
-    player.classList.remove(
-      "punching"
-    );
-
-    playerAttacking = false;
-
-  }, 250);
-
-  setTimeout(() => {
-
-    playerAttackCooldown = false;
-
-  }, 350);
-}
-
-punchButton.addEventListener(
+attackBtn.addEventListener(
   "pointerdown",
-  punch
+  ()=>{
+    if(!running || p.attacking || p.cooldown)return;
+
+    p.attacking=true;
+
+    player.classList.add("punching");
+
+    setTimeout(()=>{
+
+      if(distance()<14){
+        e.hp-=10;
+        e.energy=clamp(e.energy+8,0,100);
+      }
+
+    },100);
+
+    setTimeout(()=>{
+      player.classList.remove("punching");
+      p.attacking=false;
+    },240);
+  }
 );
 
-/* =========================================================
-   KICK
-   ========================================================= */
+/* ================= KICK ================= */
 
-function kick() {
-
-  if (gameOver) return;
-
-  if (playerAttackCooldown) return;
-
-  playerAttackCooldown = true;
-  playerAttacking = true;
-
-  player.classList.add(
-    "kicking"
-  );
-
-  setTimeout(() => {
-
-    if (fighterDistance() < 18) {
-      damageEnemy(14);
-    }
-
-  }, 120);
-
-  setTimeout(() => {
-
-    player.classList.remove(
-      "kicking"
-    );
-
-    playerAttacking = false;
-
-  }, 300);
-
-  setTimeout(() => {
-
-    playerAttackCooldown = false;
-
-  }, 450);
-}
-
-kickButton.addEventListener(
+kickBtn.addEventListener(
   "pointerdown",
-  kick
+  ()=>{
+    if(!running || p.attacking || p.cooldown)return;
+
+    p.attacking=true;
+
+    player.classList.add("kicking");
+
+    setTimeout(()=>{
+
+      if(distance()<17){
+        e.hp-=14;
+        e.energy=clamp(e.energy+10,0,100);
+      }
+
+    },120);
+
+    setTimeout(()=>{
+      player.classList.remove("kicking");
+      p.attacking=false;
+    },300);
+  }
 );
 
-/* =========================================================
-   BLOCK
-   ========================================================= */
+/* ================= BLOCK ================= */
 
-function startBlock() {
-
-  if (gameOver) return;
-
-  playerBlocking = true;
-
-  player.classList.add(
-    "blocking"
-  );
-}
-
-function stopBlock() {
-
-  playerBlocking = false;
-
-  player.classList.remove(
-    "blocking"
-  );
-}
-
-blockButton.addEventListener(
+blockBtn.addEventListener(
   "pointerdown",
-  startBlock
+  ()=>{
+    if(!running)return;
+
+    p.blocking=true;
+    player.classList.add("blocking");
+  }
 );
 
-blockButton.addEventListener(
+blockBtn.addEventListener(
   "pointerup",
-  stopBlock
+  ()=>{
+    p.blocking=false;
+    player.classList.remove("blocking");
+  }
 );
 
-blockButton.addEventListener(
+blockBtn.addEventListener(
   "pointercancel",
-  stopBlock
+  ()=>{
+    p.blocking=false;
+    player.classList.remove("blocking");
+  }
 );
 
-/* =========================================================
-   SPECIAL
-   ========================================================= */
+/* ================= SPECIAL ================= */
 
-function special() {
-
-  if (gameOver) return;
-
-  if (playerAttackCooldown) return;
-
-  playerAttackCooldown = true;
-  playerAttacking = true;
-
-  message.textContent =
-    "POWER!";
-
-  player.classList.add(
-    "punching"
-  );
-
-  setTimeout(() => {
-
-    if (fighterDistance() < 22) {
-      damageEnemy(25);
-    }
-
-  }, 150);
-
-  setTimeout(() => {
-
-    player.classList.remove(
-      "punching"
-    );
-
-    playerAttacking = false;
-
-    if (!gameOver) {
-      message.textContent = "";
-    }
-
-  }, 500);
-
-  setTimeout(() => {
-
-    playerAttackCooldown = false;
-
-  }, 900);
-}
-
-specialButton.addEventListener(
+specialBtn.addEventListener(
   "pointerdown",
-  special
+  ()=>{
+    if(!running)return;
+    if(p.energy<100)return;
+    if(p.attacking)return;
+
+    p.energy=0;
+    p.attacking=true;
+
+    announcement.textContent="FURY";
+
+    player.classList.add("punching");
+
+    setTimeout(()=>{
+
+      if(distance()<24){
+        e.hp-=30;
+      }
+
+    },150);
+
+    setTimeout(()=>{
+      player.classList.remove("punching");
+      p.attacking=false;
+
+      if(running)
+        announcement.textContent="";
+    },550);
+  }
 );
 
-/* =========================================================
-   ENEMY AI
-   ========================================================= */
+/* ================= ENEMY AI ================= */
 
-function enemyAI(delta) {
+function enemyAI(dt){
 
-  if (gameOver) return;
+  aiTimer-=dt;
 
-  const distance =
-    fighterDistance();
+  const d=distance();
 
-  enemyThinkTimer -= delta;
+  if(d>14 && !e.attacking){
 
-  /* Approach player */
+    e.x +=
+      (p.x>e.x ? 1 : -1)
+      * .018
+      * dt;
 
-  if (
-    distance > 13 &&
-    !enemyAttacking &&
-    !enemyBlocking
-  ) {
+    e.x=clamp(e.x,5,90);
 
-    const direction =
-      playerX > enemyX
-        ? 1
-        : -1;
+    enemy.classList.add("walking");
 
-    enemyX +=
-      direction *
-      ENEMY_SPEED *
-      delta;
+  }else{
 
-    enemyX =
-      clamp(
-        enemyX,
-        ARENA_MIN,
-        ARENA_MAX
-      );
-
-    enemy.classList.add(
-      "walking"
-    );
-
-  } else {
-
-    enemy.classList.remove(
-      "walking"
-    );
+    enemy.classList.remove("walking");
   }
 
-  /* Decision */
+  if(aiTimer<=0){
 
-  if (enemyThinkTimer <= 0) {
+    aiTimer=
+      450+
+      Math.random()*700;
 
-    enemyThinkTimer =
-      400 +
-      Math.random() * 600;
+    if(d<16){
 
-    if (distance < 16) {
+      const r=Math.random();
 
-      const choice =
-        Math.random();
-
-      if (
-        choice < .65 &&
-        !enemyAttackCooldown
-      ) {
-
-        enemyPunch();
-
-      } else if (
-        choice < .85
-      ) {
-
+      if(r<.65){
+        enemyAttack();
+      }
+      else if(r<.85){
         enemyBlock();
-
-      } else {
-
-        enemyBlocking = false;
-
-        enemy.classList.remove(
-          "blocking"
-        );
       }
     }
   }
-
-  updatePositions();
-  updateFacing();
 }
 
-/* =========================================================
-   ENEMY PUNCH
-   ========================================================= */
+function enemyAttack(){
 
-function enemyPunch() {
+  if(e.cooldown)return;
 
-  if (gameOver) return;
+  e.cooldown=true;
+  e.attacking=true;
 
-  if (enemyAttackCooldown) return;
+  enemy.classList.add("punching");
 
-  enemyAttackCooldown = true;
-  enemyAttacking = true;
+  setTimeout(()=>{
 
-  enemyBlocking = false;
+    if(distance()<15){
 
-  enemy.classList.remove(
-    "walking"
-  );
+      let damage=8;
 
-  enemy.classList.add(
-    "punching"
-  );
+      if(p.blocking)
+        damage=2;
 
-  setTimeout(() => {
+      p.hp-=damage;
 
-    if (fighterDistance() < 16) {
-      damagePlayer(8);
+      e.energy=
+        clamp(e.energy+10,0,100);
     }
 
-  }, 100);
+  },110);
 
-  setTimeout(() => {
+  setTimeout(()=>{
+    enemy.classList.remove("punching");
+    e.attacking=false;
+  },260);
 
-    enemy.classList.remove(
-      "punching"
-    );
-
-    enemyAttacking = false;
-
-  }, 250);
-
-  setTimeout(() => {
-
-    enemyAttackCooldown = false;
-
-  }, 600);
+  setTimeout(()=>{
+    e.cooldown=false;
+  },600);
 }
 
-/* =========================================================
-   ENEMY BLOCK
-   ========================================================= */
+function enemyBlock(){
 
-function enemyBlock() {
+  e.blocking=true;
 
-  if (gameOver) return;
+  enemy.classList.add("blocking");
 
-  enemyBlocking = true;
-
-  enemy.classList.add(
-    "blocking"
-  );
-
-  setTimeout(() => {
-
-    enemyBlocking = false;
-
-    enemy.classList.remove(
-      "blocking"
-    );
-
-  }, 500 + Math.random() * 500);
+  setTimeout(()=>{
+    e.blocking=false;
+    enemy.classList.remove("blocking");
+  },500);
 }
 
-/* =========================================================
-   PHYSICS
-   ========================================================= */
+/* ================= PHYSICS ================= */
 
-function physics(delta) {
+function physics(dt){
 
-  /* Player */
+  p.vy-=.0009*dt;
+  p.y+=p.vy*dt;
 
-  playerVelocityY -=
-    GRAVITY * delta;
-
-  playerY +=
-    playerVelocityY * delta;
-
-  if (playerY <= 0) {
-
-    playerY = 0;
-
-    playerVelocityY = 0;
+  if(p.y<0){
+    p.y=0;
+    p.vy=0;
   }
 
-  /* Enemy */
+  e.vy-=.0009*dt;
+  e.y+=e.vy*dt;
 
-  enemyVelocityY -=
-    GRAVITY * delta;
-
-  enemyY +=
-    enemyVelocityY * delta;
-
-  if (enemyY <= 0) {
-
-    enemyY = 0;
-
-    enemyVelocityY = 0;
+  if(e.y<0){
+    e.y=0;
+    e.vy=0;
   }
 
-  updatePositions();
-}
+  if(
+    Math.abs(joystickX)>.08 &&
+    !p.attacking &&
+    running
+  ){
 
-/* =========================================================
-   TIMER
-   ========================================================= */
+    p.x +=
+      joystickX*.055*dt;
 
-function startTimer() {
+    p.x=clamp(p.x,5,90);
 
-  clearInterval(timerInterval);
+    player.classList.add("walking");
 
-  timerInterval =
-    setInterval(() => {
+  }else{
 
-      if (gameOver) return;
-
-      timeLeft--;
-
-      timerElement.textContent =
-        timeLeft;
-
-      if (timeLeft <= 0) {
-
-        if (
-          playerHealth >
-          enemyHealth
-        ) {
-
-          finishRound(
-            "PLAYER WINS"
-          );
-
-        } else if (
-          enemyHealth >
-          playerHealth
-        ) {
-
-          finishRound(
-            "ENEMY WINS"
-          );
-
-        } else {
-
-          finishRound(
-            "DRAW"
-          );
-        }
-      }
-
-    }, 1000);
-}
-
-/* =========================================================
-   END ROUND
-   ========================================================= */
-
-function finishRound(result) {
-
-  if (gameOver) return;
-
-  gameOver = true;
-
-  clearInterval(
-    timerInterval
-  );
-
-  player.classList.remove(
-    "walking"
-  );
-
-  enemy.classList.remove(
-    "walking"
-  );
-
-  message.textContent =
-    result;
-
-  setTimeout(() => {
-
-    message.textContent =
-      "ROUND RESTART";
-
-  }, 1600);
-
-  setTimeout(() => {
-
-    restartRound();
-
-  }, 2400);
-}
-
-/* =========================================================
-   RESTART
-   ========================================================= */
-
-function restartRound() {
-
-  playerHealth =
-    MAX_HEALTH;
-
-  enemyHealth =
-    MAX_HEALTH;
-
-  playerX = 24;
-  enemyX = 70;
-
-  playerY = 0;
-  enemyY = 0;
-
-  playerVelocityY = 0;
-  enemyVelocityY = 0;
-
-  playerFacing = 1;
-  enemyFacing = -1;
-
-  playerBlocking = false;
-  enemyBlocking = false;
-
-  playerAttacking = false;
-  enemyAttacking = false;
-
-  playerAttackCooldown = false;
-  enemyAttackCooldown = false;
-
-  dashCooldown = false;
-
-  timeLeft = 60;
-
-  gameOver = false;
-
-  message.textContent = "";
-
-  timerElement.textContent =
-    "60";
-
-  player.className =
-    "fighter player";
-
-  enemy.className =
-    "fighter enemy";
-
-  updateHealth();
-  updatePositions();
-  updateFacing();
-
-  startTimer();
-}
-
-/* =========================================================
-   GAME LOOP
-   ========================================================= */
-
-function gameLoop(timestamp) {
-
-  if (!lastFrame) {
-    lastFrame = timestamp;
+    player.classList.remove("walking");
   }
 
-  const delta =
-    timestamp - lastFrame;
+  p.energy=
+    clamp(p.energy+.004*dt,0,100);
 
-  lastFrame = timestamp;
+  e.energy=
+    clamp(e.energy+.003*dt,0,100);
+}
 
-  if (!gameOver) {
+/* ================= ROUND ================= */
 
-    if (
-      joystickActive &&
-      Math.abs(joystickX) > .08
-    ) {
+function finish(text){
 
-      movePlayer(
-        joystickX *
-        PLAYER_SPEED *
-        delta
-      );
+  if(!running)return;
+
+  running=false;
+
+  announcement.textContent=text;
+
+  setTimeout(newRound,2200);
+}
+
+function newRound(){
+
+  p.x=25;
+  e.x=70;
+
+  p.y=0;
+  e.y=0;
+
+  p.vy=0;
+  e.vy=0;
+
+  p.hp=100;
+  e.hp=100;
+
+  p.energy=30;
+  e.energy=30;
+
+  p.attacking=false;
+  e.attacking=false;
+
+  p.blocking=false;
+  e.blocking=false;
+
+  time=60;
+
+  announcement.textContent="";
+
+  running=true;
+
+  render();
+}
+
+/* ================= GAME LOOP ================= */
+
+function loop(now){
+
+  const dt =
+    Math.min(now-lastTime,40);
+
+  lastTime=now;
+
+  if(running){
+
+    physics(dt);
+    enemyAI(dt);
+
+    if(p.hp<=0)
+      finish("RIVAL WINS");
+
+    else if(e.hp<=0)
+      finish("FURY WINS");
+
+    else if(time<=0){
+
+      if(p.hp>e.hp)
+        finish("FURY WINS");
+      else if(e.hp>p.hp)
+        finish("RIVAL WINS");
+      else
+        finish("DRAW");
     }
-
-    physics(delta);
-
-    enemyAI(delta);
   }
 
-  requestAnimationFrame(
-    gameLoop
-  );
+  render();
+
+  requestAnimationFrame(loop);
 }
 
-/* =========================================================
-   START
-   ========================================================= */
+/* ================= TIMER ================= */
 
-function startGame() {
+setInterval(()=>{
 
-  updateHealth();
+  if(!running)return;
 
-  updatePositions();
+  time--;
 
-  updateFacing();
+  timer.textContent =
+    Math.max(0,time);
 
-  startTimer();
+},1000);
 
-  requestAnimationFrame(
-    gameLoop
-  );
-}
+/* ================= START ================= */
 
-startGame();
+render();
+
+requestAnimationFrame(loop);
